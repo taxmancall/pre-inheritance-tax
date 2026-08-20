@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>상속재산 사전 정리 워크북 | 상속 개시 전 준비</title>
+<style>
+:root{
+  --ink:#16202b; --ink2:#3c4a5a; --ink3:#6b7a8c; --line:#e2e7ee; --line2:#eef1f6;
+  --bg:#f6f8fb; --card:#ffffff;
+  --navy:#1f3a5f; --navy2:#2d5586; --teal:#0f766e; --gold:#a1701a;
+  --red:#b42318; --redbg:#fef3f2; --green:#0f7b45; --greenbg:#effaf3;
+  --amber:#a15c07; --amberbg:#fffaeb; --bluebg:#eef4fb;
+  --r:10px; --sh:0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",
+    "Noto Sans KR",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg); color:var(--ink); font-size:15px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{margin:0; font-weight:700; letter-spacing:-.02em; line-height:1.35}
+p{margin:0 0 .6em}
+a{color:var(--navy2)}
+button{font-family:inherit; cursor:pointer}
+input,select,textarea{font-family:inherit; font-size:14px}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50; background:var(--navy); color:#fff;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.topbar-in{max-width:1400px; margin:0 auto; padding:11px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap}
+.brand{display:flex; align-items:baseline; gap:10px; margin-right:auto}
+.brand b{font-size:16.5px; letter-spacing:-.03em}
+.brand span{font-size:12px; color:#b9c8dc}
+.modes{display:flex; background:rgba(255,255,255,.12); border-radius:8px; padding:3px; gap:2px}
+.modes button{
+  border:0; background:transparent; color:#cddaea; padding:6px 15px; border-radius:6px;
+  font-size:13px; font-weight:600; transition:.15s;
+}
+.modes button.on{background:#fff; color:var(--navy)}
+.tb-actions{display:flex; gap:8px}
+.tb-actions button{
+  border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.08); color:#fff;
+  padding:7px 13px; border-radius:7px; font-size:12.5px; font-weight:600;
+}
+.tb-actions button:hover{background:rgba(255,255,255,.18)}
+
+/* ---------- Layout ---------- */
+.wrap{max-width:1400px; margin:0 auto; padding:20px; display:grid; grid-template-columns:214px 1fr 316px; gap:20px; align-items:start}
+@media(max-width:1180px){.wrap{grid-template-columns:1fr; }.nav,.side{position:static !important}}
+
+.nav{position:sticky; top:64px; background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:8px; box-shadow:var(--sh)}
+.nav a{
+  display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:7px;
+  color:var(--ink2); text-decoration:none; font-size:13.2px; font-weight:500;
+}
+.nav a:hover{background:var(--line2)}
+.nav a.on{background:var(--bluebg); color:var(--navy); font-weight:700}
+.nav .num{
+  flex:none; width:19px; height:19px; border-radius:5px; background:var(--line2); color:var(--ink3);
+  font-size:10.5px; font-weight:700; display:grid; place-items:center;
+}
+.nav a.on .num{background:var(--navy); color:#fff}
+.nav hr{border:0; border-top:1px solid var(--line); margin:7px 4px}
+
+.main{min-width:0}
+.side{position:sticky; top:64px; display:flex; flex-direction:column; gap:14px}
+
+/* ---------- Cards ---------- */
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--sh); margin-bottom:18px; overflow:hidden}
+.card>header{padding:16px 20px 14px; border-bottom:1px solid var(--line2)}
+.card>header h2{font-size:19px; display:flex; align-items:center; gap:9px}
+.card>header .sub{font-size:13px; color:var(--ink3); margin-top:5px}
+.card .body{padding:18px 20px}
+.sec-badge{
+  flex:none; width:24px; height:24px; border-radius:7px; background:var(--navy); color:#fff;
+  font-size:12px; font-weight:700; display:grid; place-items:center;
+}
+
+/* ---------- Text helpers ---------- */
+h3.h{font-size:15px; margin:20px 0 9px; padding-left:9px; border-left:3px solid var(--navy2)}
+h3.h:first-child{margin-top:0}
+.muted{color:var(--ink3)}
+.small{font-size:13px}
+.tiny{font-size:12px}
+.note{background:var(--bluebg); border:1px solid #d5e2f2; border-radius:8px; padding:11px 13px; font-size:13.2px; margin:10px 0}
+.warn{background:var(--amberbg); border:1px solid #f5dfae; border-radius:8px; padding:11px 13px; font-size:13.2px; margin:10px 0}
+.danger{background:var(--redbg); border:1px solid #f4c7c3; border-radius:8px; padding:11px 13px; font-size:13.2px; margin:10px 0}
+.ok{background:var(--greenbg); border:1px solid #bfe5cf; border-radius:8px; padding:11px 13px; font-size:13.2px; margin:10px 0}
+.law{
+  display:inline-block; background:#f1f4f9; border:1px solid var(--line); border-radius:5px;
+  padding:1px 7px; font-size:11.5px; color:var(--ink2); font-weight:600; margin:2px 3px 2px 0;
+}
+ul.tight{margin:6px 0; padding-left:19px} ul.tight li{margin:3px 0}
+ol.tight{margin:6px 0; padding-left:20px} ol.tight li{margin:4px 0}
+
+table.t{width:100%; border-collapse:collapse; font-size:13.2px; margin:9px 0}
+table.t th,table.t td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top}
+table.t th{background:#f4f7fa; font-weight:700; color:var(--ink2)}
+table.t td.n,table.t th.n{text-align:right; font-variant-numeric:tabular-nums}
+
+/* ---------- Mode visibility ---------- */
+body:not(.pro) .pro-only{display:none !important}
+body.pro .cli-only{display:none !important}
+.pro-only{border-left:3px solid var(--teal); background:#f4fbfa; padding:11px 13px; border-radius:0 8px 8px 0; margin:10px 0; font-size:13.2px}
+.pro-only .tag{display:inline-block; background:var(--teal); color:#fff; font-size:10.5px; font-weight:700; padding:1px 7px; border-radius:4px; margin-bottom:6px; letter-spacing:.03em}
+
+/* ---------- Asset blocks ---------- */
+.acat{border:1px solid var(--line); border-radius:9px; margin-bottom:11px; overflow:hidden; background:#fff}
+.acat>.head{
+  display:flex; align-items:center; gap:11px; padding:12px 14px; cursor:pointer;
+  background:#fbfcfe; border-bottom:1px solid transparent;
+}
+.acat.open>.head{border-bottom-color:var(--line2)}
+.acat>.head:hover{background:#f4f7fb}
+.acat .ic{flex:none; width:30px; height:30px; border-radius:8px; display:grid; place-items:center; font-size:15px; background:var(--bluebg)}
+.acat .ttl{font-weight:700; font-size:14.6px}
+.acat .desc{font-size:12.3px; color:var(--ink3); margin-top:1px}
+.acat .sum{margin-left:auto; text-align:right; font-size:13px; font-variant-numeric:tabular-nums; color:var(--navy); font-weight:700; white-space:nowrap}
+.acat .sum small{display:block; font-weight:500; color:var(--ink3); font-size:11px}
+.acat .chev{flex:none; color:var(--ink3); transition:.2s; font-size:12px}
+.acat.open .chev{transform:rotate(90deg)}
+.acat>.panel{display:none; padding:14px}
+.acat.open>.panel{display:block}
+
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.infobox{background:#fafbfd; border:1px solid var(--line2); border-radius:8px; padding:11px 12px; font-size:12.8px}
+.infobox h5{margin:0 0 5px; font-size:12px; color:var(--teal); font-weight:700; letter-spacing:.02em}
+.infobox ul{margin:0; padding-left:16px} .infobox li{margin:2px 0}
+
+/* rows */
+table.rows{width:100%; border-collapse:collapse; font-size:13.2px; margin-top:11px}
+table.rows th{font-size:11.5px; color:var(--ink3); font-weight:700; text-align:left; padding:0 6px 5px; border-bottom:1px solid var(--line)}
+table.rows td{padding:4px 6px; border-bottom:1px solid var(--line2)}
+table.rows input[type=text]{width:100%; border:1px solid var(--line); border-radius:6px; padding:6px 8px}
+table.rows input.num{text-align:right; font-variant-numeric:tabular-nums}
+table.rows input:focus{outline:2px solid #bcd3ee; border-color:var(--navy2)}
+.del{border:0; background:transparent; color:var(--ink3); font-size:15px; padding:2px 6px; border-radius:5px}
+.del:hover{background:var(--redbg); color:var(--red)}
+.addbtn{margin-top:9px; border:1px dashed var(--line); background:#fff; color:var(--navy2); padding:7px 13px; border-radius:7px; font-size:12.8px; font-weight:600}
+.addbtn:hover{border-color:var(--navy2); background:var(--bluebg)}
+
+.chk{display:flex; align-items:flex-start; gap:8px; padding:5px 0; font-size:13.2px}
+.chk input{margin-top:3px; flex:none; width:15px; height:15px; accent-color:var(--navy)}
+
+/* ---------- Side panel ---------- */
+.side .card{margin:0}
+.sum-row{display:flex; justify-content:space-between; gap:10px; padding:5px 0; font-size:13.2px; border-bottom:1px dashed var(--line2)}
+.sum-row:last-child{border-bottom:0}
+.sum-row b{font-variant-numeric:tabular-nums; white-space:nowrap}
+.sum-row.total{border-top:1.5px solid var(--ink); margin-top:5px; padding-top:8px; font-size:14.4px; font-weight:700; border-bottom:0}
+.sum-row.sub{padding-left:9px; color:var(--ink3); font-size:12.4px}
+.bigtax{background:linear-gradient(160deg,#1f3a5f,#2d5586); color:#fff; border-radius:var(--r); padding:16px 18px}
+.bigtax .lbl{font-size:12px; color:#c3d3e6; letter-spacing:.03em}
+.bigtax .val{font-size:27px; font-weight:800; letter-spacing:-.03em; font-variant-numeric:tabular-nums; margin-top:2px}
+.bigtax .sub2{font-size:11.8px; color:#a8bdd6; margin-top:6px; line-height:1.5}
+
+.field{margin-bottom:10px}
+.field label{display:block; font-size:12.3px; font-weight:600; color:var(--ink2); margin-bottom:3px}
+.field input,.field select{width:100%; border:1px solid var(--line); border-radius:7px; padding:7px 9px}
+.field input.num{text-align:right; font-variant-numeric:tabular-nums}
+.field .hint{font-size:11.3px; color:var(--ink3); margin-top:3px}
+.inline2{display:grid; grid-template-columns:1fr 1fr; gap:9px}
+
+.pill{display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; background:var(--line2); color:var(--ink2)}
+.pill.g{background:var(--greenbg); color:var(--green)}
+.pill.r{background:var(--redbg); color:var(--red)}
+.pill.a{background:var(--amberbg); color:var(--amber)}
+
+.bar{height:7px; background:var(--line2); border-radius:5px; overflow:hidden; margin:7px 0}
+.bar>i{display:block; height:100%; background:var(--navy2); border-radius:5px; transition:.3s}
+
+details.q{border:1px solid var(--line); border-radius:8px; padding:10px 13px; margin-bottom:8px; background:#fff}
+details.q summary{font-weight:600; font-size:13.6px; cursor:pointer; list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary:before{content:"▸ "; color:var(--navy2)}
+details.q[open] summary:before{content:"▾ "}
+details.q .ans{margin-top:9px; padding-top:9px; border-top:1px solid var(--line2); font-size:13.2px; color:var(--ink2)}
+
+.steps{counter-reset:s; margin:0; padding:0; list-style:none}
+.steps li{counter-increment:s; position:relative; padding:0 0 14px 34px; border-left:2px solid var(--line); margin-left:11px}
+.steps li:last-child{border-left-color:transparent; padding-bottom:0}
+.steps li:before{
+  content:counter(s); position:absolute; left:-12px; top:-2px; width:22px; height:22px; border-radius:50%;
+  background:var(--navy); color:#fff; font-size:11.5px; font-weight:700; display:grid; place-items:center;
+}
+.steps li b{display:block; font-size:14px; margin-bottom:2px}
+.steps li p{font-size:13px; color:var(--ink2); margin:0}
+
+.foot{max-width:1400px; margin:0 auto; padding:8px 20px 40px; font-size:11.8px; color:var(--ink3); line-height:1.7}
+
+@media print{
+  .topbar,.nav,.addbtn,.del,.tb-actions{display:none !important}
+  .wrap{display:block; max-width:none; padding:0}
+  .side{position:static; display:block}
+  .card{break-inside:avoid; box-shadow:none; margin-bottom:12px}
+  .acat>.panel{display:block !important}
+  body{background:#fff; font-size:11.5pt}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <b>상속재산 사전 정리 워크북</b>
+      <span>상속 개시 전 준비 · 2026년 8월 기준</span>
+    </div>
+    <div class="modes">
+      <button id="mCli" class="on" onclick="setMode(0)">일반 안내</button>
+      <button id="mPro" onclick="setMode(1)">실무자 상세</button>
+    </div>
+    <div class="tb-actions">
+      <button onclick="saveJSON()">저장</button>
+      <button onclick="document.getElementById('loadf').click()">불러오기</button>
+      <button onclick="window.print()">인쇄 / PDF</button>
+      <input type="file" id="loadf" accept=".json" style="display:none" onchange="loadJSON(this)">
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ NAV ============ -->
+  <nav class="nav" id="nav">
+    <a href="#s0"><span class="num">0</span>시작하기</a>
+    <hr>
+    <a href="#s1"><span class="num">1</span>상속재산 파악</a>
+    <a href="#s2"><span class="num">2</span>간주상속재산</a>
+    <a href="#s3"><span class="num">3</span>사전증여재산</a>
+    <a href="#s4"><span class="num">4</span>추정상속재산</a>
+    <a href="#s5"><span class="num">5</span>유증·유언</a>
+    <hr>
+    <a href="#s6"><span class="num">6</span>상속채무 파악</a>
+    <a href="#s7"><span class="num">7</span>상속인 확정</a>
+    <hr>
+    <a href="#s8"><span class="num">8</span>감정평가 전략</a>
+    <a href="#s9"><span class="num">9</span>상속공제</a>
+    <a href="#s10"><span class="num">10</span>세액 계산</a>
+    <a href="#s11"><span class="num">11</span>분납·연부연납</a>
+    <a href="#s12"><span class="num">12</span>보험 활용</a>
+    <hr>
+    <a href="#s13"><span class="num">✓</span>준비 서류</a>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main" id="main">
+<!-- ================= 0. 시작하기 ================= -->
+<section class="card" id="s0">
+  <header>
+    <h2><span class="sec-badge">0</span>시작하기 — 왜 지금 재산을 정리하는가</h2>
+    <div class="sub">상속은 세금 문제 이전에 <b>“무엇이 어디에 있는지 아는 문제”</b>입니다.</div>
+  </header>
+  <div class="body">
+    <p>돌아가신 뒤에 재산을 찾는 일은 늦습니다. 실무에서 가장 흔한 사고는 세율이 높아서가 아니라
+    <b>재산을 빠뜨려서</b>, <b>채무를 증명하지 못해서</b>, <b>인출한 돈의 사용처를 설명하지 못해서</b> 생깁니다.
+    상속 개시 전에 정리해 두면 이 세 가지를 대부분 막을 수 있습니다.</p>
+
+    <div class="danger">
+      <b>사전 준비가 없으면 벌어지는 일</b>
+      <ul class="tight">
+        <li>고인의 계좌에서 빠져나간 돈의 사용처를 유족이 알지 못해 <b>추정상속재산</b>으로 과세 (상증세법 제15조)</li>
+        <li>가족·지인 간 빌린 돈은 차용증·이체내역이 없으면 <b>채무공제가 부인</b> (상증세법 시행령 제10조)</li>
+        <li>몰랐던 재산이 나중에 발견되어 <b>수정신고 + 가산세</b></li>
+        <li>기준시가로 신고했다가 국세청 감정평가로 <b>세액이 몇 배로 증액</b> (2026.4.2. 대법원 2025두35499 — 국세청 감정평가 적법 확정)</li>
+      </ul>
+    </div>
+
+    <h3 class="h">이 워크북 사용 순서</h3>
+    <ol class="steps">
+      <li><b>재산 목록 만들기 (1~5장)</b><p>부동산·금융·주식부터 회원권·상속채권까지 항목별로 빠짐없이. 간주상속재산·사전증여·추정상속재산까지 포함해야 실제 과세 대상이 나옵니다.</p></li>
+      <li><b>채무 목록 만들기 (6장)</b><p>대출·병원비·임대보증금·사인간 채무. <u>증빙을 지금 만들어 두는 것</u>이 핵심입니다.</p></li>
+      <li><b>상속인 확정 (7장)</b><p>누가 상속인인지에 따라 공제액과 상속분이 완전히 달라집니다. 재혼·사실혼·대습상속 여부를 먼저 확인하십시오.</p></li>
+      <li><b>평가 전략 세우기 (8장)</b><p>기준시가로 갈지 감정평가를 받을지. 상속세만 보지 말고 <b>향후 양도소득세</b>까지 같이 계산합니다.</p></li>
+      <li><b>공제·세액 확인 (9~10장)</b><p>예상 세액이 나오면 규모가 보입니다.</p></li>
+      <li><b>납부 재원 준비 (11~12장)</b><p>분납·연부연납·물납, 그리고 보험을 활용한 납부 재원 설계.</p></li>
+    </ol>
+
+    <div class="note" style="margin-top:16px">
+      <b>입력한 내용은 이 브라우저 안에서만 처리됩니다.</b> 어디에도 전송되지 않습니다.
+      상단 <b>저장</b> 버튼으로 파일(.json)로 내려받고, <b>불러오기</b>로 다시 이어서 작성할 수 있습니다.
+      완성된 내용은 <b>인쇄 / PDF</b>로 출력해 상담 자료로 쓰십시오.
+    </div>
+
+    <div class="pro-only">
+      <span class="tag">실무자</span>
+      <b>2026년 8월 현재 입법 상태</b><br>
+      · 유산취득세 전환(2025.3. 정부 입법예고, 2028년 시행 목표) — <b>국회 미통과, 현행 유산세 방식 유지</b><br>
+      · 2024.12. 정부 상속세 개편안(자녀공제 5억 상향, 최고세율 인하) — <b>국회 부결, 미시행</b><br>
+      · 2026 세제개편안(2026.8. 발표) 가업상속공제 확대(한도 경영연수×20억, 최대 1,000억) — <b>발표 단계, 미확정</b><br>
+      따라서 본 계산기는 <b>현행 5단계 누진세율(10~50%)·현행 공제한도</b>로 계산합니다.
+    </div>
+  </div>
+</section>
+
+<!-- ================= 1. 상속재산 파악 ================= -->
+<section class="card" id="s1">
+  <header>
+    <h2><span class="sec-badge">1</span>상속재산 파악 — 무엇이 상속재산인가</h2>
+    <div class="sub">피상속인에게 귀속되는 <b>금전으로 환가할 수 있는 경제적 가치가 있는 모든 물건과 권리</b>가 상속재산입니다. 항목을 열어 하나씩 채워 넣으십시오.</div>
+  </header>
+  <div class="body">
+    <div class="note">
+      <b>평가 원칙 한 줄 요약 —</b> 상속재산은 <b>상속개시일 현재의 시가</b>로 평가합니다.
+      시가란 불특정 다수인 사이에 통상 성립되는 가액이고, <b>상속개시일 전후 6개월</b> 이내의 매매가·감정가·수용가·경매가·공매가가 시가로 인정됩니다.
+      시가를 산정하기 어려우면 기준시가 등 보충적 평가방법을 씁니다.
+      <span class="law">상증세법 제60조</span><span class="law">시행령 제49조</span>
+    </div>
+
+    <div id="assetHost"></div>
+
+    <div class="warn" style="margin-top:14px">
+      <b>빠뜨리기 쉬운 재산 —</b> 실무에서 자주 누락되는 것들입니다. 반드시 확인하십시오.<br>
+      임대보증금 반환채권 · 개인에게 빌려준 돈 · 미수령 배당금과 실기주 · 휴면예금 · 사망 직전 해지한 예금 ·
+      골프/콘도 회원권 · 분양권 프리미엄 · 상조 납입금 · 특허·상표 등 무체재산권 · 가상자산 ·
+      가족 명의로 사 둔 차명 부동산·차명 계좌 · 조합 출자금 · 사업장의 재고·매출채권
+    </div>
+
+    <div class="pro-only">
+      <span class="tag">실무자</span>
+      <b>가상자산</b>은 2023.7.18. 개정으로 상증세법 제60조 제1항 제2호에 별도 근거가 생겼고, 제65조 제2항의 평가방법(국세청장 고시 사업자의 경우 평가기준일 전·이후 각 1개월 평균액)을 적용합니다.
+      <b>차명재산</b>은 명의신탁 증여의제(제45조의2)와 별개로, 실질귀속에 따라 상속재산에 포함될 수 있으므로 사전 정리(환원 시점의 증여세 문제 포함) 검토가 필요합니다.
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. 간주상속재산 ================= -->
+<section class="card" id="s2">
+  <header>
+    <h2><span class="sec-badge">2</span>간주상속재산 — 보험금 · 신탁재산 · 퇴직금</h2>
+    <div class="sub">민법상 상속재산은 아니지만 <b>세법이 상속재산으로 보는</b> 것들입니다. 상속 실무에서 가장 많이 놓치는 영역입니다.</div>
+  </header>
+  <div class="body">
+
+    <h3 class="h">① 사망보험금 <span class="law">상증세법 제8조</span></h3>
+    <p>피상속인의 사망으로 받는 생명보험·손해보험의 보험금 중, <b>피상속인이 보험료를 부담한 부분</b>은 상속재산으로 봅니다.
+    보험금이 상속세 대상인지 아닌지는 <b>“누가 계약자이고, 누가 보험료를 냈고, 누가 수익자인가”</b>로 갈립니다.</p>
+
+    <table class="t">
+      <tr><th style="width:15%">계약자</th><th style="width:15%">피보험자</th><th style="width:15%">수익자</th><th style="width:20%">보험료 실제 부담</th><th>과세</th></tr>
+      <tr><td>부(피상속인)</td><td>부</td><td>자녀</td><td>부</td><td><b class="pill r">상속세</b> 간주상속재산 (제8조)</td></tr>
+      <tr><td>자녀</td><td>부</td><td>자녀</td><td><b>자녀 본인</b>(소득 있음)</td><td><b class="pill g">과세 없음</b> 자녀 고유재산</td></tr>
+      <tr><td>자녀</td><td>부</td><td>자녀</td><td>실제로는 부가 대납</td><td><b class="pill r">상속세</b> 실질과세로 제8조 적용</td></tr>
+      <tr><td>모</td><td>부</td><td>자녀</td><td>모</td><td><b class="pill a">증여세</b> 모 → 자녀 증여 (제34조)</td></tr>
+    </table>
+
+    <div class="ok">
+      <b>사전 준비 포인트 —</b> 자녀를 계약자·수익자로 하려면 <b>자녀에게 실제 소득이 있어야</b> 하고,
+      보험료가 <b>자녀 본인 계좌에서 자동이체</b>된 기록이 남아야 합니다. 부모가 대신 내 주면 결국 상속재산으로 잡힙니다.
+      소득이 없는 자녀라면, 보험료 상당액을 <b>먼저 증여하고 증여세 신고</b>를 한 뒤 그 돈으로 납입하는 방식이 안전합니다.
+    </div>
+
+    <div class="pro-only">
+      <span class="tag">실무자</span>
+      제8조는 “피상속인이 보험계약자인 경우”뿐 아니라 <b>“보험계약자가 피상속인 외의 자이더라도 피상속인이 실질적으로 보험료를 납부한 경우”</b>를 포함합니다.
+      납입기간 중 일부만 피상속인이 부담했다면 <b>총 납입보험료 중 피상속인 부담분 비율</b>로 안분합니다.
+      계약자 변경 이력이 있는 경우 변경 시점의 해지환급금 상당액에 대한 증여 문제도 함께 검토하십시오.
+    </div>
+
+    <h3 class="h">② 신탁재산 <span class="law">상증세법 제9조</span></h3>
+    <ul class="tight">
+      <li>피상속인이 <b>신탁한 재산</b>은 상속재산에 포함합니다. (타인이 신탁이익을 받을 권리를 가진 부분은 제외)</li>
+      <li>피상속인이 <b>신탁으로 인하여 받을 이익을 받을 권리</b>를 가진 경우 그 이익도 상속재산입니다.</li>
+      <li><b>유언대용신탁</b>: 사후수익자가 취득하는 수익권은 상속세 과세 대상입니다.</li>
+    </ul>
+    <div class="warn">
+      <b>유언대용신탁을 “유류분 회피 수단”으로 설계하지 마십시오.</b>
+      신탁재산이 유류분 산정 기초재산에 포함되는지에 관해 하급심 판단이 엇갈리고 있으며(수원지법 성남지원 2017가합408489는 불포함, 서울중앙지법 2021가합547069는 위탁자가 수익자변경권·신탁종료권을 보유해 사실상 지배하면 포함), <b>확립된 대법원 판례가 아직 없습니다.</b>
+    </div>
+    <div class="pro-only">
+      <span class="tag">실무자</span>
+      취득세 관련 — <b>대법원 2025.9.25. 선고 2025두33790</b>: 유언대용신탁 수익권의 내용이 <b>부동산 소유권이전등기청구권</b>이면 부동산 취득이지만,
+      <b>처분대금 지급청구권(금전채권)</b>에 불과하면 지방세법상 부동산 취득이 아니어서 취득세 과세가 위법. <u>신탁계약서의 수익권 문언 설계가 결정적</u>입니다.
+    </div>
+
+    <h3 class="h">③ 퇴직금·퇴직수당·공로금 등 <span class="law">상증세법 제10조</span></h3>
+    <p>피상속인에게 지급될 퇴직금, 퇴직수당, 공로금, 연금 또는 이와 유사한 것으로서 <b>사망으로 인해 지급되는 것</b>은 상속재산으로 봅니다.</p>
+    <table class="t">
+      <tr><th style="width:46%">항목</th><th>상속재산 여부</th></tr>
+      <tr><td>회사 퇴직금·퇴직위로금·미지급 급여</td><td><b class="pill r">포함</b></td></tr>
+      <tr><td>퇴직연금(DB/DC) 사망 시 지급액</td><td><b class="pill r">포함</b> (개별 계약 확인)</td></tr>
+      <tr><td><b>국민연금법상 유족연금 · 반환일시금</b></td><td><b class="pill g">제외</b> — 유족의 고유재산 (제10조 단서, 시행령 제6조)</td></tr>
+      <tr><td>공무원연금·사학연금·군인연금의 유족연금·유족일시금·유족보상금</td><td><b class="pill g">제외</b></td></tr>
+      <tr><td>산업재해보상보험법상 유족보상금</td><td><b class="pill g">제외</b></td></tr>
+      <tr><td>생전에 이미 수급권이 발생했으나 못 받은 <b>미지급 노령연금</b></td><td><b class="pill r">포함</b> (국세청 재산세과-252 등)</td></tr>
+    </table>
+    <div class="note">
+      <b>혼동 주의 —</b> “국민연금 유족연금은 상속재산이 아니다”는 맞지만, 그건 <b>유족연금</b> 이야기입니다.
+      돌아가시기 전에 이미 지급받을 권리가 생겼는데 못 받은 <b>미지급분</b>은 상속재산입니다.
+    </div>
+
+    <div style="margin-top:16px" id="deemedHost"></div>
+  </div>
+</section>
+
+<!-- ================= 3. 사전증여재산 ================= -->
+<section class="card" id="s3">
+  <header>
+    <h2><span class="sec-badge">3</span>사전증여재산 — 10년 · 5년 합산</h2>
+    <div class="sub">돌아가시기 전에 미리 준 재산도 일정 기간 내라면 상속재산에 <b>다시 합산</b>됩니다. <span class="law">상증세법 제13조</span></div>
+  </header>
+  <div class="body">
+    <table class="t">
+      <tr><th style="width:40%">증여받은 사람</th><th>합산 기간</th></tr>
+      <tr><td><b>상속인</b> (배우자, 자녀, 손자녀가 대습상속인인 경우 등)</td><td>상속개시일 전 <b>10년</b> 이내 증여분</td></tr>
+      <tr><td><b>상속인이 아닌 자</b> (며느리·사위, 손자녀, 법인, 제3자 등)</td><td>상속개시일 전 <b>5년</b> 이내 증여분</td></tr>
+    </table>
+
+    <div class="note">
+      합산되는 가액은 <b>증여 당시의 평가액</b>입니다(상증세법 제60조 제4항). 즉 증여 후 값이 크게 오른 재산은,
+      오른 금액이 아니라 <b>증여 당시 낮은 가액</b>으로 합산됩니다. 이것이 사전증여의 가장 큰 효과입니다.
+      이미 낸 증여세는 <b>증여세액공제</b>로 상속세에서 차감합니다(제28조).
+    </div>
+
+    <h3 class="h">사전증여 재산 확인 방법</h3>
+    <div class="grid2">
+      <div class="infobox">
+        <h5>홈택스 — 상속재산 및 사전증여재산 확인신청</h5>
+        <ul>
+          <li>국세증명·신청 → 일반 세무서류 신청 → 민원명 <b>‘사전증여’</b> 검색</li>
+          <li>신청서 + 상속인 위임장 제출</li>
+          <li>국세청에 <b>신고·결정된 증여</b> 내역만 조회됩니다</li>
+        </ul>
+      </div>
+      <div class="infobox">
+        <h5>실제 증여 vs 조회되는 증여</h5>
+        <ul>
+          <li>신고하지 않은 <b>현금 이체·차명계좌</b>는 조회되지 않습니다</li>
+          <li>결국 <b>계좌 거래내역 전수 점검</b>이 필요합니다</li>
+          <li>사전 준비 단계에서 증여 시점·금액·신고 여부를 표로 정리해 두십시오</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ok">
+      <b>사전 준비 포인트 —</b> 사전증여는 <b>빠를수록</b> 유리합니다. 10년(비상속인 5년)이 지나면 합산 자체가 되지 않습니다.
+      또한 <b>값이 오를 재산을 먼저</b>, 그리고 <b>여러 사람에게 나누어</b>, <b>10년 주기로</b> 증여하는 것이 기본 원칙입니다.
+      다만 사전증여는 아래 두 가지 부작용이 있으므로 반드시 함께 계산해야 합니다.
+    </div>
+    <div class="warn">
+      <b>사전증여의 함정 두 가지</b>
+      <ol class="tight">
+        <li><b>상속공제 종합한도를 깎습니다.</b> 합산된 사전증여재산의 과세표준만큼 공제한도가 줄어들어(상증세법 제24조),
+        “증여세도 내고 공제도 못 받는” 결과가 될 수 있습니다. 특히 <b>상속재산이 10억 안팎</b>인 경우 사전증여가 오히려 손해인 사례가 많습니다.</li>
+        <li><b>동거주택상속공제·가업상속공제 요건</b>을 깨뜨릴 수 있습니다.</li>
+      </ol>
+    </div>
+
+    <div style="margin-top:16px" id="giftHost"></div>
+  </div>
+</section>
+
+<!-- ================= 4. 추정상속재산 ================= -->
+<section class="card" id="s4">
+  <header>
+    <h2><span class="sec-badge">4</span>추정상속재산 — 사용처를 못 밝히면 과세</h2>
+    <div class="sub">돌아가시기 전 인출·처분·차입한 금액의 <b>용도를 입증하지 못하면</b> 상속받은 것으로 <b>추정</b>합니다. <span class="law">상증세법 제15조</span></div>
+  </header>
+  <div class="body">
+    <table class="t">
+      <tr><th style="width:34%">구분</th><th>기준 금액</th></tr>
+      <tr><td rowspan="2">① 재산 처분액 / 예금 인출액<br>② 부담한 채무</td>
+          <td>상속개시일 전 <b>1년 이내</b> 재산종류별로 <b>2억원 이상</b></td></tr>
+      <tr><td>상속개시일 전 <b>2년 이내</b> 재산종류별로 <b>5억원 이상</b></td></tr>
+    </table>
+    <p class="small">※ 재산종류: ⓐ 현금·예금·유가증권 ⓑ 부동산 및 부동산에 관한 권리 ⓒ 그 밖의 재산 — <b>종류별로 각각</b> 판정합니다.</p>
+
+    <div class="note">
+      <b>전액이 과세되는 것은 아닙니다.</b> 용도가 객관적으로 명백하지 않은 금액에서
+      <b>MIN(처분·인출·차입액 × 20%, 2억원)</b>을 뺀 나머지를 상속재산에 가산합니다. <span class="law">시행령 제11조</span>
+    </div>
+
+    <h3 class="h">사전에 해 두어야 할 일</h3>
+    <ul class="tight">
+      <li>큰돈이 나갔다면 <b>어디에 썼는지 메모와 증빙</b>을 남겨 두십시오. 영수증·계약서·이체 상대방·용도.</li>
+      <li>병원비·간병비는 <b>피상속인 본인 계좌·카드</b>로 결제하십시오. (아래 6장 참조)</li>
+      <li>자녀에게 준 돈이라면 <b>증여세 신고</b>를 하십시오. 신고하면 “사용처 불명”이 아니라 “사전증여”가 되어 정상 처리됩니다.</li>
+      <li>고액 현금 인출은 피하고, 가급적 <b>계좌 대 계좌</b>로 흐름을 남기십시오.</li>
+      <li>부동산을 처분했다면 매각대금이 어느 계좌로 들어가 어디로 나갔는지 <b>흐름표</b>를 만들어 두십시오.</li>
+    </ul>
+
+    <div class="danger">
+      <b>가장 흔한 사고 —</b> 요양병원 입원 중 자녀가 “아버지 돈 관리한다”며 수억 원을 본인 계좌로 옮겨 놓는 경우.
+      사용처 입증도 안 되고, 사전증여 신고도 없어서 <b>추정상속재산 + 무신고가산세</b>로 이어집니다.
+    </div>
+
+    <div class="pro-only">
+      <span class="tag">실무자</span>
+      입증책임은 원칙적으로 과세관청이 “처분·인출·차입 사실”을, 납세자가 “용도”를 부담하는 구조입니다.
+      시행령 제11조 제2항은 거래상대방이 <b>피상속인의 특수관계인으로서 사회통념상 지출사실이 인정되지 않는 경우</b> 등을 용도 불분명으로 열거하므로,
+      가족 간 이체는 그 자체로 소명 부담이 큽니다. 상속개시 전 2년간 계좌 전수조회는 상속세 조사의 기본 절차입니다.
+    </div>
+
+    <div style="margin-top:16px" id="presumeHost"></div>
+  </div>
+</section>
+
+<!-- ================= 5. 유증 ================= -->
+<section class="card" id="s5">
+  <header>
+    <h2><span class="sec-badge">5</span>유증 · 유언 — 재산을 “누구에게” 정할 것인가</h2>
+    <div class="sub">유언은 <b>법이 정한 방식</b>을 지키지 않으면 전부 무효입니다. <span class="law">민법 제1060조</span></div>
+  </header>
+  <div class="body">
+    <h3 class="h">유언의 5가지 방식 <span class="law">민법 제1065조~제1070조</span></h3>
+    <table class="t">
+      <tr><th style="width:15%">방식</th><th style="width:9%">증인</th><th>요건</th><th style="width:11%">법원 검인</th></tr>
+      <tr><td><b>자필증서</b></td><td>불요</td><td>①전문 ②연월일 ③주소 ④성명을 <b>모두 직접 손으로</b> 쓰고 ⑤날인</td><td>필요</td></tr>
+      <tr><td>녹음</td><td>필요</td><td>유언 취지·성명·연월일 구술 + 증인이 정확함과 성명 구술</td><td>필요</td></tr>
+      <tr><td><b>공정증서</b></td><td>2인</td><td>공증인 면전에서 구수 → 공증인 필기·낭독 → 승인 후 서명·날인</td><td><b>불요</b></td></tr>
+      <tr><td>비밀증서</td><td>2인 이상</td><td>엄봉날인 → 증인 면전 제출 → 5일 내 확정일자</td><td>필요</td></tr>
+      <tr><td>구수증서</td><td>2인 이상</td><td>질병 등 급박한 사유가 있을 때만 → 7일 내 법원 검인 신청</td><td>필요</td></tr>
+    </table>
+
+    <div class="danger">
+      <b>자필증서 유언이 무효가 되는 흔한 이유</b>
+      <ul class="tight">
+        <li>재산목록만 <b>컴퓨터로 작성</b> → 전체 무효 (서울고법 2020나2021150)</li>
+        <li>“2026년 8월”처럼 <b>날짜(일)를 빠뜨림</b> → 무효</li>
+        <li><b>주소를 안 쓰거나</b> “○○동”까지만 씀 → 무효</li>
+        <li>도장 없이 <b>서명만</b> → 무효 (인감·막도장·지장은 가능)</li>
+        <li>복사본만 있고 원본이 없음 → 무효</li>
+      </ul>
+      <b>결론: 실무에서는 공정증서 유언을 권합니다.</b> 검인 불필요, 무효 위험 최소, 등기·상속세 신고가 매끄럽습니다.
+    </div>
+
+    <h3 class="h">포괄유증 vs 특정유증 — 채무가 따라오느냐가 핵심</h3>
+    <table class="t">
+      <tr><th style="width:22%">구분</th><th>포괄유증</th><th>특정유증</th></tr>
+      <tr><td>대상</td><td>“전 재산의 1/3” 등 비율</td><td>“○○아파트”, “현금 1억” 등 특정</td></tr>
+      <tr><td>지위</td><td><b>상속인과 동일한 권리의무</b> (민법 제1078조)</td><td>상속인에 대한 청구권만</td></tr>
+      <tr><td><b>채무 승계</b></td><td><b class="pill r">승계함</b> — 비율만큼 빚도 진다</td><td><b class="pill g">승계 안 함</b></td></tr>
+      <tr><td>포기</td><td>가정법원 신고, 안 날부터 3개월</td><td>언제든 의사표시로 가능 (제1074조)</td></tr>
+    </table>
+
+    <h3 class="h">유류분 — 2026년 3월 민법 개정 반영</h3>
+    <table class="t">
+      <tr><th style="width:34%">권리자</th><th>유류분</th></tr>
+      <tr><td>직계비속(자녀 등)</td><td>법정상속분의 <b>1/2</b></td></tr>
+      <tr><td>배우자</td><td>법정상속분의 <b>1/2</b></td></tr>
+      <tr><td>직계존속(부모 등)</td><td>법정상속분의 <b>1/3</b></td></tr>
+      <tr><td><s>형제자매</s></td><td><b class="pill g">폐지</b> — 헌재 2024.4.25. 2020헌가4 위헌, 2024.9.20. 조문 삭제</td></tr>
+    </table>
+    <div class="note">
+      <b>2026.3.17. 시행 개정 민법(법률 제21454호) 요점</b>
+      <ul class="tight">
+        <li><b>기여 보상 증여는 유류분 대상에서 제외</b> — 오랜 기간 동거·간호하거나 재산 유지·증가에 특별히 기여한 데 대한 보상으로 한 증여는 그 범위에서 특별수익으로 보지 않습니다(제1008조 단서). <u>부모를 모신 자녀에게 미리 준 재산을 지켜주는 조항</u>입니다.</li>
+        <li><b>유류분 반환은 원물반환에서 가액(금전)반환 원칙으로 전환</b> (제1115조)</li>
+        <li><b>상속권 상실 선고 제도</b>(제1004조의2, 이른바 구하라법) — 부양의무를 중대하게 위반하거나 중대한 범죄·부당한 대우를 한 상속인은 상속권과 유류분을 함께 잃습니다. 공정증서 유언으로 의사표시 가능.</li>
+      </ul>
+    </div>
+    <div class="pro-only">
+      <span class="tag">실무자</span>
+      부칙상 제1004조의2·제1008조 단서는 <b>2024.4.25. 이후 개시된 상속</b>에도 적용(소급).
+      <b>대법원 2026.6.11. 선고 2024다222922</b>는 헌법불합치결정 당시 계속 중이던 사건에 신법이 소급 적용된다고 판시했습니다.
+      유류분 소멸시효는 안 때부터 1년, 상속개시시부터 10년(제1117조).
+    </div>
+
+    <div class="ok">
+      <b>사전 준비 포인트 —</b> 유언으로 특정 자녀에게 몰아주더라도 다른 상속인의 유류분은 남습니다.
+      분쟁을 줄이려면 ①유언 이유를 문서로 남기고 ②기여분·기여 보상 취지를 명시하며 ③생전 증여 시점을 앞당기고
+      ④필요하면 유류분 상당액을 <b>보험금(수익자 지정)</b>으로 마련해 두는 설계가 효과적입니다.
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. 상속채무 ================= -->
+<section class="card" id="s6">
+  <header>
+    <h2><span class="sec-badge">6</span>상속채무 파악 — 증명하지 못하면 공제받지 못한다</h2>
+    <div class="sub">채무는 <b>있다는 사실</b>이 아니라 <b>증명할 수 있느냐</b>의 문제입니다. <span class="law">상증세법 제14조</span><span class="law">시행령 제10조</span></div>
+  </header>
+  <div class="body">
+    <div class="note">
+      <b>공제되는 것</b> = 상속개시일 현재 피상속인이 부담해야 할 <b>채무</b> + <b>공과금</b> + <b>장례비용</b><br>
+      단, 상속인이 <b>실제로 부담하는 사실</b>이 다음 서류로 증명되어야 합니다.
+      <ul class="tight" style="margin-top:6px">
+        <li><b>국가·지자체·금융기관 채무</b> → 해당 기관의 채무 확인 서류</li>
+        <li><b>그 밖의 자에 대한 채무</b> → <b>채무부담계약서 · 채권자확인서 · 담보설정 및 이자지급에 관한 증빙</b></li>
+      </ul>
+    </div>
+
+    <h3 class="h">채무 유형별 취급</h3>
+    <table class="t">
+      <tr><th style="width:24%">유형</th><th>공제 범위</th></tr>
+      <tr><td>금융기관 대출</td><td>원금 + <b>상속개시일 현재 미지급이자</b></td></tr>
+      <tr><td>임대보증금</td><td>실제 임대차계약 내용에 따라 귀속 판정 — 반환의무 있는 금액 전액</td></tr>
+      <tr><td>보증채무</td><td>주채무자가 변제불능이고 <b>구상권 행사가 불가능한 부분</b>만</td></tr>
+      <tr><td>연대채무</td><td>피상속인의 부담분 + 구상 불가능한 타인 부담분</td></tr>
+      <tr><td>증여채무</td><td>상속인에게 10년 전, 상속인 아닌 자에게 5년 전에 진 증여채무로 실제 부담한 것</td></tr>
+      <tr><td>사용인 퇴직금</td><td>근로자퇴직급여 보장법에 따른 지급액</td></tr>
+      <tr><td>공동사업장 채무</td><td>장부로 확인된 채무를 <b>출자지분 비율로 안분</b></td></tr>
+    </table>
+
+    <h3 class="h">피상속인 병원비 — 반드시 알아야 할 실무</h3>
+    <div class="danger">
+      <b>병원비는 가급적 “피상속인 본인 계좌·카드”로 결제하십시오.</b><br>
+      · 본인 재산으로 내면 → 그만큼 <b>상속재산이 줄어듭니다</b>. 가장 확실하고 다툼이 없습니다.<br>
+      · 자녀가 대신 내면 → 과세관청은 “상속인이 자기 돈으로 낸 것이므로 피상속인의 채무가 아니다”라며 <b>채무공제를 부인</b>하는 경우가 있습니다.<br>
+      · 미납 상태로 두면 → 상속개시일 현재 미납 진료비는 <b>채무로 공제</b>됩니다.
+    </div>
+    <div class="pro-only">
+      <span class="tag">실무자</span>
+      다만 법원은 실질을 봅니다. <b>대전지방법원 2020구합666(2022.9.7. 선고)</b>은
+      “상속인들이 대납한 병원비 등이 채무인지 여부는 지급행위를 둘러싼 구체적 사정에 따라 판단하여야 하고,
+      상속인 명의 금융계좌 등에서 지급한 병원비 등은 채무에 해당한다”고 판시했습니다(조심2020중1873 참조).
+      대납이 불가피했다면 <b>대납 사실·정산 약정·구상관계 증빙</b>을 확보해 다투어 볼 여지가 있습니다.
+    </div>
+
+    <h3 class="h">공과금 · 장례비용</h3>
+    <div class="grid2">
+      <div class="infobox">
+        <h5>공과금 <span class="law">시행령 제9조 ①</span></h5>
+        <ul>
+          <li>상속개시일 현재 피상속인이 납부할 의무가 있어 상속인에게 승계된 <b>조세·공공요금</b> 등</li>
+          <li>예: 미납 재산세·종부세·소득세·건강보험료</li>
+          <li><b>제외</b>: 상속개시 후 상속인 귀책으로 생긴 가산세·가산금·벌금·과태료</li>
+        </ul>
+      </div>
+      <div class="infobox">
+        <h5>장례비용 <span class="law">시행령 제9조 ②</span></h5>
+        <ul>
+          <li><b>① 장례 직접비용</b>: 증빙 없어도 <b>500만원</b> 공제 / 500만원 초과 시 증빙액과 <b>1,000만원</b> 중 적은 금액</li>
+          <li><b>② 봉안시설·자연장지</b>: 증빙액과 <b>500만원</b> 중 적은 금액 (①과 별도, 증빙 필수)</li>
+          <li>→ <b>최대 1,500만원</b></li>
+          <li>범위: 시신 발굴·안치, 묘지구입비, 공원묘지 사용료, 비석, 상석</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="h">채무 조회 방법</h3>
+    <div class="grid2">
+      <div class="infobox">
+        <h5>생전(사전 준비 단계) — 본인이 직접</h5>
+        <ul>
+          <li><b>크레딧포유</b>(한국신용정보원) credit4u.or.kr — 대출·카드·<b>채무보증정보·채권자변동정보</b>·보험계약현황까지 본인 열람</li>
+          <li>홈택스·위택스 — 국세·지방세 체납 확인</li>
+          <li>어카운트인포 payinfo.or.kr — 휴면계좌·소액계좌 정리</li>
+        </ul>
+      </div>
+      <div class="infobox">
+        <h5>사후 — 상속인이</h5>
+        <ul>
+          <li><b>안심상속 원스톱서비스</b>(정부24/주민센터): 금융·토지·자동차·국세·지방세·연금 일괄. 신청기한 <b>사망일이 속한 달의 말일부터 1년</b></li>
+          <li><b>상속인 금융거래 조회</b>(금감원·은행·우체국 등): 금융채권·금융채무·보관금품·체납 공공정보. 처리 <b>20일 이내</b>, 결과 3개월간 열람</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ok">
+      <b>사전 준비 포인트 — 사인간 채무는 “살아 계실 때” 증빙을 만들어야 합니다.</b><br>
+      ①차용증(가급적 공증 또는 확정일자) ②실제 이자 지급 계좌이체 내역 ③가능하면 근저당 설정.
+      셋 중 하나라도 없으면 세무조사에서 부인될 가능성이 높습니다. 특히 <b>가족 간 채무</b>는 더욱 엄격합니다.
+    </div>
+
+    <div style="margin-top:16px" id="debtHost"></div>
+  </div>
+</section>
+
+<!-- ================= 7. 상속인 확정 ================= -->
+<section class="card" id="s7">
+  <header>
+    <h2><span class="sec-badge">7</span>상속인 확정 — 누가 상속인인가</h2>
+    <div class="sub">상속인이 누구인지에 따라 <b>공제액·상속분·세액</b>이 전부 달라집니다.</div>
+  </header>
+  <div class="body">
+    <h3 class="h">상속 순위 <span class="law">민법 제1000조·제1003조</span></h3>
+    <table class="t">
+      <tr><th style="width:12%">순위</th><th style="width:33%">상속인</th><th>배우자</th></tr>
+      <tr><td>1순위</td><td>직계비속 (자녀·손자녀)</td><td rowspan="2">1·2순위와 <b>공동상속</b>. 상속분은 <b>1.5배</b></td></tr>
+      <tr><td>2순위</td><td>직계존속 (부모·조부모)</td></tr>
+      <tr><td>3순위</td><td>형제자매</td><td rowspan="2">1·2순위가 없으면 <b>배우자 단독상속</b><br>(형제자매·방계혈족은 배우자와 공동상속하지 않음)</td></tr>
+      <tr><td>4순위</td><td>4촌 이내 방계혈족</td></tr>
+    </table>
+    <p class="small">태아는 이미 출생한 것으로 봅니다. 같은 순위가 여럿이면 균분, 최근친이 선순위입니다.</p>
+
+    <h3 class="h">부모 중 한 분이 먼저 돌아가신 경우 — 자주 묻는 사례</h3>
+    <table class="t">
+      <tr><th style="width:38%">상황</th><th>상속인과 법정상속분</th></tr>
+      <tr><td>아버지 사망 · 어머니 생존 · 자녀 2명</td><td>어머니 <b>3/7</b>, 자녀 각 <b>2/7</b> (1.5 : 1 : 1)</td></tr>
+      <tr><td>어머니가 먼저 돌아가신 뒤 아버지 사망 · 자녀 2명</td><td>자녀 각 <b>1/2</b> (배우자 없음)</td></tr>
+      <tr><td>아버지 사망 · 자녀 없음 · 어머니(배우자)와 조부모 생존</td><td>배우자 <b>3/7</b>, 시부모 각 <b>2/7</b></td></tr>
+      <tr><td>아버지 사망 · 어머니 생존 · 장남이 먼저 사망(며느리·손자 1명) · 차남</td><td>어머니 15/35, 차남 10/35, <b>며느리 6/35</b>, <b>손자 4/35</b> (대습상속)</td></tr>
+    </table>
+
+    <h3 class="h">대습상속 <span class="law">민법 제1001조·제1003조②·제1010조</span></h3>
+    <ul class="tight">
+      <li>상속인이 될 <b>직계비속 또는 형제자매</b>가 상속개시 <b>전에 사망</b>하거나 상속결격·상속권 상실이 된 경우,
+      그 사람의 <b>직계비속</b>과 <b>배우자</b>가 그 순위에 갈음하여 상속인이 됩니다.</li>
+      <li>상속분은 원래 그 사람이 받을 몫 그대로입니다.</li>
+      <li>동시사망으로 추정되는 경우에도 대습상속이 인정됩니다 (대법원 99다13157).</li>
+    </ul>
+    <div class="pro-only">
+      <span class="tag">실무자</span>
+      2026.3.17. 개정으로 제1003조 제2항이 “상속개시 전에 <b>사망한 사람</b>의 배우자”로 축소되어,
+      <b>상속결격자·상속권 상실자의 배우자는 대습상속을 하지 못한다</b>는 점이 명확해졌습니다.
+    </div>
+
+    <h3 class="h">사실혼 배우자 · 재혼가정 — 가장 많이 틀리는 부분</h3>
+    <div class="danger">
+      <b>사실혼 배우자에게는 상속권이 없습니다.</b> 민법 제1003조의 ‘배우자’는 <b>법률상 배우자</b>만을 뜻하며,
+      헌법재판소도 2024.3.28. 2020헌바494 등에서 <b>전원일치 합헌</b>으로 판단했습니다.
+      (“혼인신고를 통해 상속권을 취득할 수 있고, 생전 증여·유증으로 상응한 효과를 얻을 수 있다”)
+    </div>
+    <table class="t">
+      <tr><th style="width:34%">사실혼 배우자에게 인정되는 것</th><th>근거</th></tr>
+      <tr><td>주택 임차권 승계</td><td>주택임대차보호법 제9조 (상속인이 없거나, 상속인이 함께 살지 않은 경우)</td></tr>
+      <tr><td>국민연금 유족연금 수급</td><td>국민연금법상 ‘배우자’에 사실상 혼인관계 포함</td></tr>
+      <tr><td>특별연고자 재산분여</td><td>민법 제1057조의2 (상속인이 <b>전혀 없는</b> 경우에 한함)</td></tr>
+    </table>
+
+    <table class="t">
+      <tr><th style="width:24%">재혼가정 구분</th><th style="width:26%">친생부모와의 관계</th><th>상속권</th></tr>
+      <tr><td><b>계자녀</b> (입양 안 함)</td><td>유지</td><td>계부·계모 재산 <b class="pill r">상속권 없음</b> / 친생부모 상속권 있음</td></tr>
+      <tr><td><b>일반양자</b></td><td>유지</td><td><b class="pill g">양쪽 모두</b> 상속권</td></tr>
+      <tr><td><b>친양자</b></td><td><b>종료</b></td><td>양부모만 상속권 / 친생부모 <b class="pill r">상속권 없음</b></td></tr>
+    </table>
+    <div class="note">
+      <b>재혼가정 핵심 —</b> 1990년 민법 개정으로 계모자·적모서자 관계의 법정혈족성이 폐지되어,
+      <b>재혼 배우자의 자녀는 그냥 두면 내 재산을 한 푼도 상속받지 못합니다.</b>
+      물려주고 싶다면 <b>입양</b>하거나 <b>유증</b>해야 합니다.<br>
+      단, 배우자의 친생자를 <b>단독으로 친양자 입양</b>한 경우에는 그 배우자(친모)와의 친족관계는 유지되고 <b>친부와의 관계만 종료</b>됩니다(민법 제908조의3 단서).
+    </div>
+
+    <h3 class="h">상속포기 · 한정승인 <span class="law">민법 제1019조</span></h3>
+    <ul class="tight">
+      <li>기한은 <b>상속개시 있음을 안 날부터 3개월</b>. 상속세 신고기한(6개월)과 다릅니다.</li>
+      <li>빚이 더 많은 줄 몰랐고 <b>중대한 과실 없이</b> 단순승인했다면, 그 사실을 안 날부터 3개월 내 <b>특별한정승인</b> 가능.</li>
+      <li>미성년 상속인은 <b>성년이 된 후</b> 초과사실을 안 날부터 3개월 내 한정승인 가능.</li>
+    </ul>
+
+    <div style="margin-top:16px" id="heirHost"></div>
+  </div>
+</section>
+
+<!-- ================= 8. 감정평가 ================= -->
+<section class="card" id="s8">
+  <header>
+    <h2><span class="sec-badge">8</span>감정평가 전략 — 상속세와 양도소득세를 함께 본다</h2>
+    <div class="sub">평가액을 <b>낮추면</b> 상속세가 줄고, <b>높이면</b> 나중에 팔 때 양도세가 줍니다. 어느 쪽이 유리한지는 계산해 봐야 압니다.</div>
+  </header>
+  <div class="body">
+    <div class="note">
+      <b>왜 이런 선택이 생기나 —</b> 상속받은 부동산을 나중에 팔 때 <b>취득가액</b>은
+      “상속개시일 현재 상증세법 제60조~제66조에 따라 평가한 가액”입니다 <span class="law">소득세법 시행령 제163조⑨</span>.
+      즉 <b>상속세 신고 때 적어 낸 금액이 곧 미래의 취득가액</b>이 됩니다.
+      기준시가로 낮게 신고하면 상속세는 줄지만, 팔 때 양도차익이 그만큼 커집니다.
+    </div>
+
+    <h3 class="h">감정평가액을 시가로 인정받는 요건</h3>
+    <ul class="tight">
+      <li>원칙 <b>둘 이상</b>의 공신력 있는 감정기관 감정가액의 <b>평균액</b>. 단, <b>기준시가 10억원 이하 부동산</b>은 <b>하나</b>도 가능 <span class="law">상증세법 제60조⑤</span><span class="law">시행령 제49조①2호</span></li>
+      <li><b>가격산정기준일과 감정평가서 작성일이 모두 평가기간(상속개시일 전후 6개월) 안</b>에 있어야 합니다.</li>
+      <li>상속세 납부 목적에 적합하지 않은 조건부 감정, 평가기준일 현재 원형대로 감정하지 않은 감정은 시가로 보지 않습니다.</li>
+      <li>감정가액이 다른 감정기관 가액의 <b>80%에 미달</b>하면 시가불인정 감정기관으로 지정될 수 있습니다.</li>
+    </ul>
+
+    <h3 class="h">국세청 감정평가사업 — “기준시가로 신고하고 버티기”는 끝났습니다</h3>
+    <div class="danger">
+      <b>대법원 2026.4.2. 선고 2025두35499</b> — 평가기간이 지난 뒤 과세관청이 의뢰한 감정가액을
+      평가심의위원회를 거쳐 시가로 볼 수 있도록 한 <b>상증세법 시행령 제49조 제1항 단서는 유효</b>하다고 확정했습니다.
+      (서울행정법원 2021구합85600은 2025.12.15. 무효로 판단했으나 대법원이 뒤집었습니다.)
+    </div>
+    <table class="t">
+      <tr><th style="width:20%">시기</th><th>대상</th><th>선정 기준</th></tr>
+      <tr><td>2020~2024</td><td>비주거용 부동산(꼬마빌딩·근린상가), 나대지</td><td>신고가액이 추정시가보다 <b>10억원 이상</b> 낮거나 <b>10% 이상</b> 차이</td></tr>
+      <tr><td><b>2025.1.1.~</b></td><td><b>“부동산”으로 확대</b> — 초고가 아파트·호화 단독주택 등 <b>주거용 포함</b></td><td>차액 <b>5억원 이상</b> 또는 <b>10% 이상</b></td></tr>
+    </table>
+    <p class="small pro-only" style="border:0;background:none;padding:0">
+      <span class="tag">실무자</span> 2025년 실적 703건, 신고액 2조 2,252억 → 4조 689억으로 <b>약 83% 상향</b>.
+      2020~2024 누적 896건, 5조 5,000억 → 9조 7,000억(약 75% 상향). 관련 예산 2024년 45억 → 2025년 96억.
+      납세자 자진 감정평가 신고 비율은 2024년 48.6% → 2025년 1분기 60.6%로 상승. 근거: 상속세 및 증여세 사무처리규정 제72조.
+    </p>
+
+    <h3 class="h">판단 기준</h3>
+    <table class="t">
+      <tr><th style="width:32%">상황</th><th>권장</th></tr>
+      <tr><td>공제로 <b>상속세가 0원</b>이거나 매우 낮은 구간</td><td><b class="pill g">감정평가 강력 권장</b> — 상속세 증가는 없고 미래 양도세만 줄어듭니다</td></tr>
+      <tr><td>가까운 시일 내 <b>매각 예정</b></td><td><b class="pill g">감정평가 유리</b></td></tr>
+      <tr><td>상속세 한계세율 <b>40~50%</b> + 장기 보유·자녀 거주 예정</td><td><b class="pill a">기준시가 검토</b> — 단, 국세청 감정 리스크를 반드시 반영</td></tr>
+      <tr><td>기준시가와 시세 차이가 큰 <b>상가·꼬마빌딩·토지</b></td><td><b class="pill r">국세청 감정 대상 가능성 높음</b> — 선제적 감정평가 검토</td></tr>
+    </table>
+    <div class="ok">
+      <b>감정평가 수수료도 공제됩니다.</b> 상속재산 감정평가 수수료는 과세가액에서 공제합니다 <span class="law">상증세법 제25조①2호</span>.
+      한도는 부동산 등 <b>500만원</b>, 비상장주식 신용평가전문기관 수수료 <b>1,000만원</b>, 서화·골동품 등 <b>500만원</b>입니다.
+    </div>
+
+    <h3 class="h">간이 시뮬레이션</h3>
+    <div id="apprHost"></div>
+  </div>
+</section>
+
+<!-- ================= 9. 공제 ================= -->
+<section class="card" id="s9">
+  <header>
+    <h2><span class="sec-badge">9</span>상속공제 — 세금을 결정하는 진짜 변수</h2>
+    <div class="sub">한국 상속세는 세율보다 <b>공제 설계</b>에서 결판이 납니다.</div>
+  </header>
+  <div class="body">
+    <div id="dedHost"></div>
+
+    <h3 class="h">공제 항목별 설명</h3>
+
+    <details class="q" open>
+      <summary>기초공제 + 그 밖의 인적공제 vs 일괄공제 5억 <span class="law">제18조·제20조·제21조</span></summary>
+      <div class="ans">
+        <b>둘 중 큰 금액</b>을 선택합니다.
+        <ul class="tight">
+          <li><b>A안</b> = 기초공제 <b>2억</b> + 자녀공제(1인당 5,000만원) + 미성년자공제(1,000만원 × 19세까지 잔여연수) + 연로자공제(65세 이상 1인당 5,000만원) + 장애인공제(1,000만원 × 기대여명 연수)</li>
+          <li><b>B안</b> = <b>일괄공제 5억원</b></li>
+        </ul>
+        자녀가 아주 많거나 장애인 상속인이 있는 경우가 아니면 대개 <b>일괄공제 5억이 유리</b>합니다.
+        <div class="warn" style="margin-top:8px"><b>주의:</b> 배우자가 <b>단독으로</b> 상속받는 경우에는 일괄공제를 적용할 수 없고 기초공제 + 인적공제만 가능합니다.</div>
+      </div>
+    </details>
+
+    <details class="q" open>
+      <summary>배우자상속공제 — 최소 5억, 최대 30억 <span class="law">제19조</span></summary>
+      <div class="ans">
+        <ul class="tight">
+          <li>배우자가 <b>실제로 상속받은 금액</b>을 공제합니다.</li>
+          <li>한도 = MIN( <b>배우자 법정상속분 상당액</b>, <b>30억원</b> )</li>
+          <li>실제 상속받은 금액이 5억 미만이거나 <b>아예 상속받지 않아도 5억원</b>은 공제합니다.</li>
+        </ul>
+        <div class="note" style="margin-top:8px">
+          <b>배우자가 생존해 있으면 통상 10억(일괄 5억 + 배우자 5억)까지는 상속세가 없습니다.</b>
+          배우자에게 법정상속분만큼 배분하면 공제가 크게 늘어나지만, 그 재산은 <b>나중에 어머니가 돌아가실 때 다시 상속세</b>(2차 상속) 대상이 됩니다.
+          1차·2차를 <b>합산해서</b> 최적 배분을 찾아야 합니다.
+        </div>
+        <div class="pro-only" style="margin-top:8px">
+          <span class="tag">실무자</span>
+          법정상속분 상당액 = (상속재산가액 + 상속인의 10년 내 사전증여재산 − 상속인이 아닌 자에게 유증·사인증여한 재산 − 비과세·불산입 − 공과금·채무) × 배우자 법정상속지분 − 배우자의 사전증여재산 과세표준.
+          <b>배우자상속재산 분할기한(신고기한 다음 날부터 9개월) 내에 실제 분할·등기</b>하고 신고해야 실제 상속분 기준 공제가 적용됩니다. 미분할 시 5억만 공제됩니다.
+        </div>
+      </div>
+    </details>
+
+    <details class="q" open>
+      <summary>금융재산상속공제 — 최대 2억 <span class="law">제22조</span></summary>
+      <div class="ans">
+        <b>순금융재산</b> = 금융재산 − 금융채무
+        <table class="t">
+          <tr><th style="width:42%">순금융재산</th><th>공제액</th></tr>
+          <tr><td>2,000만원 이하</td><td>전액</td></tr>
+          <tr><td>2,000만원 초과 ~ 1억원 이하</td><td>2,000만원</td></tr>
+          <tr><td>1억원 초과</td><td>순금융재산 × <b>20%</b> (한도 <b>2억원</b>)</td></tr>
+        </table>
+        대상: 예금·적금·부금·출자금·신탁재산·보험금·주식·채권·수익증권 등.
+        <b>제외</b>: 최대주주·최대출자자가 보유한 주식, 신고하지 않은 타인 명의 금융재산.
+        <div class="ok" style="margin-top:8px"><b>부동산만 있으면 못 받는 공제입니다.</b> 순금융재산 10억을 만들어 두면 2억이 공제됩니다. 자산 구성을 미리 조정할 이유가 됩니다.</div>
+      </div>
+    </details>
+
+    <details class="q" open>
+      <summary>동거주택상속공제 — 최대 6억 <span class="law">제23조의2</span></summary>
+      <div class="ans">
+        공제액 = MIN( 주택가액(부수토지 포함) − 해당 주택에 담보된 채무, <b>6억원</b> )
+        <br><b>요건 (모두 충족)</b>
+        <ol class="tight">
+          <li>상속개시일부터 <b>소급하여 10년 이상 계속</b> 피상속인과 하나의 주택에서 동거 (상속인이 미성년자인 기간은 제외)</li>
+          <li>그 기간 동안 계속 <b>1세대 1주택</b>일 것</li>
+          <li>상속인이 <b>무주택자</b>이거나 피상속인과 공동으로 1세대 1주택을 보유한 자로서, 동거주택을 <b>상속받을 것</b></li>
+          <li>상속인은 <b>직계비속</b>(및 대습상속인인 그 배우자)일 것 — <b>배우자는 대상 아님</b></li>
+        </ol>
+        <div class="danger" style="margin-top:8px"><b>10년은 매우 엄격합니다.</b> 중간에 자녀가 분가하거나 다른 집을 사면 요건이 깨집니다. 상속 개시 전에 <u>주민등록·실거주·주택 수</u>를 미리 점검하십시오.</div>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary>가업상속공제 — 최대 600억 <span class="law">제18조의2</span></summary>
+      <div class="ans">
+        피상속인이 <b>10년 이상 계속 경영</b>한 중소기업·매출액 기준 중견기업을 상속인이 승계하는 경우.
+        <table class="t">
+          <tr><th style="width:40%">피상속인 계속 경영기간</th><th>공제 한도</th></tr>
+          <tr><td>10년 이상 20년 미만</td><td>300억원</td></tr>
+          <tr><td>20년 이상 30년 미만</td><td>400억원</td></tr>
+          <tr><td>30년 이상</td><td>600억원</td></tr>
+        </table>
+        주요 요건: 피상속인이 최대주주로서 지분 40%(상장 20%) 이상을 10년 이상 보유, 대표이사 재직요건,
+        상속인이 18세 이상이고 상속개시일 전 2년 이상 가업 종사, 신고기한까지 임원 취임 및 2년 내 대표이사 취임.
+        <b>사후관리 5년</b>(가업 종사·지분 유지·고용 유지) 위반 시 추징 + 이자상당액.
+        <div class="warn" style="margin-top:8px">
+          2026 세제개편안(2026.8. 발표)에서 <b>한도를 “경영연수 × 20억, 최대 1,000억”</b>으로 확대하고 대상 업종을 727개로 넓히는 안이 제시되었으나,
+          2026년 8월 현재 <b>국회 통과 전</b>입니다. 계산에는 현행 기준을 적용하십시오.
+        </div>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary>영농상속공제 · 재해손실공제</summary>
+      <div class="ans">
+        <b>영농상속공제</b> <span class="law">제18조의3</span> — 피상속인이 상속개시일 2년 전부터 계속 영농(양축·영어·영림 포함)에 종사하고,
+        상속인이 이를 승계하는 경우 영농상속재산가액을 <b>최대 30억원</b>까지 공제. 사후관리 5년.<br><br>
+        <b>재해손실공제</b> <span class="law">제23조</span> — 상속세 <b>신고기한 이내</b>에 화재·붕괴·폭발·환경오염사고·자연재해로 상속재산이 멸실·훼손된 경우 그 손실가액을 공제.
+        보험금 등으로 보전받는 금액은 제외합니다.
+      </div>
+    </details>
+
+    <details class="q">
+      <summary>공제 종합한도 — 사전증여를 함부로 하면 안 되는 이유 <span class="law">제24조</span></summary>
+      <div class="ans">
+        위 공제들의 합계는 다음 한도를 넘지 못합니다.
+        <div class="note" style="margin-top:6px">
+          공제 한도 = 상속세 과세가액
+          <br>&nbsp;&nbsp;− 선순위 상속인이 아닌 자에게 <b>유증·사인증여</b>한 재산
+          <br>&nbsp;&nbsp;− 상속포기로 <b>후순위 상속인이 받은</b> 재산
+          <br>&nbsp;&nbsp;− <b>합산된 사전증여재산의 과세표준</b>
+        </div>
+        마지막 항목이 핵심입니다. 사전증여를 많이 해 두면 그만큼 <b>공제 한도가 깎여서</b>,
+        증여세도 냈는데 상속공제도 못 받는 상황이 생깁니다. 상속재산 규모가 <b>10억 안팎</b>이면
+        사전증여가 오히려 총세부담을 늘릴 수 있으니 반드시 시뮬레이션하십시오.
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= 10. 세액 계산 ================= -->
+<section class="card" id="s10">
+  <header>
+    <h2><span class="sec-badge">10</span>세액 계산</h2>
+    <div class="sub">앞에서 입력한 값으로 계산한 결과입니다.</div>
+  </header>
+  <div class="body">
+    <h3 class="h">세율 <span class="law">상증세법 제26조</span></h3>
+    <table class="t">
+      <tr><th style="width:34%">과세표준</th><th style="width:16%">세율</th><th>누진공제</th></tr>
+      <tr><td>1억원 이하</td><td>10%</td><td>—</td></tr>
+      <tr><td>1억원 초과 ~ 5억원 이하</td><td>20%</td><td>1,000만원</td></tr>
+      <tr><td>5억원 초과 ~ 10억원 이하</td><td>30%</td><td>6,000만원</td></tr>
+      <tr><td>10억원 초과 ~ 30억원 이하</td><td>40%</td><td>1억 6,000만원</td></tr>
+      <tr><td>30억원 초과</td><td>50%</td><td>4억 6,000만원</td></tr>
+    </table>
+    <p class="small muted">※ 2026년 8월 현재 현행 세율입니다. 최고세율 인하안·유산취득세 전환안은 입법되지 않았습니다.</p>
+
+    <div id="calcHost"></div>
+
+    <div class="note">
+      <b>신고기한</b> — 상속개시일이 속하는 달의 말일부터 <b>6개월</b> 이내(피상속인이 비거주자이거나 상속인 전원이 비거주자면 <b>9개월</b>).
+      기한 내 신고하면 <b>신고세액공제 3%</b>를 받습니다 <span class="law">제67조·제69조</span>.
+    </div>
+  </div>
+</section>
+
+<!-- ================= 11. 납부 ================= -->
+<section class="card" id="s11">
+  <header>
+    <h2><span class="sec-badge">11</span>분납 · 연부연납 · 물납</h2>
+    <div class="sub">세금은 나왔는데 낼 현금이 없다 — 상속 실무에서 가장 흔한 문제입니다.</div>
+  </header>
+  <div class="body">
+    <table class="t">
+      <tr><th style="width:14%">방법</th><th style="width:22%">요건</th><th style="width:20%">기간</th><th>내용</th></tr>
+      <tr>
+        <td><b>분납</b></td>
+        <td>납부세액 <b>1,000만원 초과</b></td>
+        <td>납부기한 경과 후 <b>2개월</b> 이내</td>
+        <td>· 2,000만원 이하: 1,000만원 초과분을 분납<br>· 2,000만원 초과: 50% 이하 금액을 분납<br><b class="pill g">이자 없음</b> · 담보 불필요</td>
+      </tr>
+      <tr>
+        <td><b>연부연납</b></td>
+        <td>납부세액 <b>2,000만원 초과</b><br>+ <b>납세담보 제공</b><br>+ 신고기한 내 신청</td>
+        <td>일반 상속 <b>최대 10년</b><br>가업상속공제 적용분 <b>최대 20년</b></td>
+        <td>· 각 회분 분납세액이 <b>1,000만원 초과</b>가 되도록 기간 설정<br>· <b>연부연납가산금</b>(이자) 부담 — 국세기본법 시행규칙상 이자율 적용(2025.3. 개정 연 3.1%, <b>변동</b>)<br>· 담보: 부동산·보증보험증권·납세보증서 등</td>
+      </tr>
+      <tr>
+        <td><b>물납</b></td>
+        <td>① 부동산·유가증권 가액이 상속재산의 <b>50% 초과</b><br>② 납부세액 <b>2,000만원 초과</b><br>③ 납부세액이 <b>상속재산 중 금융재산 가액을 초과</b></td>
+        <td>신고기한 내 신청</td>
+        <td>국내 소재 부동산, 국채·공채, 일정 요건의 상장주식 등으로 납부<br><b class="pill r">증여세는 물납 불가</b></td>
+      </tr>
+    </table>
+
+    <div class="warn">
+      <b>연부연납은 “공짜 분할”이 아닙니다.</b> 가산금이 붙고, 담보를 제공해야 하며, 담보 설정 비용도 듭니다.
+      10년간 이자 부담과 대출금리를 비교해 보십시오. 상속받은 부동산을 담보로 대출받아 일시납하는 편이 유리한 경우도 있습니다.
+    </div>
+    <div class="ok">
+      <b>사전 준비 포인트 —</b> 예상 세액을 미리 계산해 두면 ①연부연납 담보로 쓸 부동산을 정해 두고
+      ②상속인 명의로 <b>금융재산 비중</b>을 조정하며 ③보험으로 납부 재원을 만드는(12장) 준비가 가능합니다.
+      <b>물납은 국가가 시가보다 낮게 평가해 받는 경우가 많아 최후 수단</b>으로 봅니다.
+    </div>
+
+    <div id="payHost"></div>
+  </div>
+</section>
+
+<!-- ================= 12. 보험 ================= -->
+<section class="card" id="s12">
+  <header>
+    <h2><span class="sec-badge">12</span>보험을 활용한 상속세 납부 재원 준비</h2>
+    <div class="sub">상속세는 <b>현금</b>으로 냅니다. 재산은 부동산인데 세금은 현금이라는 미스매치를 푸는 도구입니다.</div>
+  </header>
+  <div class="body">
+    <div class="note">
+      <b>왜 보험인가 —</b> ①사망 시점에 <b>확정된 현금</b>이 즉시 생기고 ②상속재산 분할협의 없이 <b>수익자에게 바로</b> 지급되며
+      ③부동산을 급매하거나 연부연납 가산금을 물지 않아도 됩니다.
+    </div>
+
+    <h3 class="h">핵심은 “계약 구조”입니다</h3>
+    <table class="t">
+      <tr><th style="width:22%">구조</th><th style="width:26%">보험금의 성격</th><th>효과</th></tr>
+      <tr>
+        <td>계약자·수익자 = <b>자녀</b><br>피보험자 = 부모<br>보험료 = <b>자녀 소득으로 납입</b></td>
+        <td><b class="pill g">자녀의 고유재산</b><br>상속재산 아님</td>
+        <td>보험금 전액을 <b>상속세 납부 재원</b>으로 사용. 상속세 과세표준을 늘리지 않음. <b>가장 이상적인 구조</b></td>
+      </tr>
+      <tr>
+        <td>계약자·수익자 = 자녀<br>보험료 = <b>부모가 대납</b></td>
+        <td><b class="pill r">간주상속재산</b> (제8조)</td>
+        <td>보험금이 상속재산에 포함되어 세금이 늘어남. <u>흔한 실수</u></td>
+      </tr>
+      <tr>
+        <td>계약자·수익자 = 부모(피상속인)</td>
+        <td><b class="pill r">상속재산</b></td>
+        <td>과세표준 증가. 다만 <b>금융재산상속공제</b> 대상은 됨</td>
+      </tr>
+    </table>
+
+    <h3 class="h">소득 없는 자녀를 계약자로 만들려면</h3>
+    <ol class="tight">
+      <li>부모가 자녀에게 <b>현금을 증여</b>하고 <b>증여세를 신고</b>합니다. (성년 자녀 10년간 5,000만원, 미성년 2,000만원까지는 증여재산공제로 세금 없음)</li>
+      <li>그 돈을 <b>자녀 명의 계좌</b>에 두고, 그 계좌에서 <b>보험료가 자동이체</b>되도록 합니다.</li>
+      <li>증여 사실·자금 출처·이체 내역을 모두 남깁니다.</li>
+    </ol>
+    <div class="warn">
+      <b>주의 —</b> 이렇게 해도 그 증여는 <b>10년 이내면 상속재산에 합산</b>됩니다(3장). 그래도 보험금 자체(증여액보다 훨씬 큰 사망보험금)는
+      상속재산에 들어가지 않으므로 레버리지 효과가 큽니다. <b>빨리 시작할수록</b> 유리합니다.
+    </div>
+
+    <h3 class="h">얼마짜리 보험이 필요한가</h3>
+    <div id="insHost"></div>
+
+    <div class="pro-only">
+      <span class="tag">실무자</span>
+      · 종신보험 외에 <b>정기보험</b>으로 기간을 한정하면 보험료 부담이 크게 줄어듭니다(예: 85세 만기).<br>
+      · 법인 CEO의 경우 법인계약(계약자·수익자 법인)으로 하고 사망 시 <b>퇴직금 재원</b>으로 쓰는 설계가 있으나, 지급 퇴직금은 상증세법 제10조상 간주상속재산이 되므로 상속세 절감 효과가 아니라 <b>재원 마련 효과</b>로 이해해야 합니다.<br>
+      · 유류분 분쟁 대비: 특정 상속인에게 재산을 몰아주고 나머지 상속인에게 지급할 유류분 상당액을 보험금으로 준비하는 설계가 실무상 유용합니다.
+    </div>
+  </div>
+</section>
+
+<!-- ================= 13. 서류 ================= -->
+<section class="card" id="s13">
+  <header>
+    <h2><span class="sec-badge">✓</span>지금 준비해 둘 것 · 조회처 정리</h2>
+    <div class="sub">상속 개시 전에 모아 두면 나중에 유족이 헤매지 않습니다.</div>
+  </header>
+  <div class="body">
+    <h3 class="h">생전에 정리해 둘 것 (피상속인 본인 또는 가족이)</h3>
+    <div id="prepHost"></div>
+
+    <h3 class="h">항목별 조회처</h3>
+    <table class="t">
+      <tr><th style="width:22%">확인 대상</th><th style="width:30%">조회처</th><th>비고</th></tr>
+      <tr><td>부동산 소유·권리관계</td><td>대법원 인터넷등기소 iros.go.kr</td><td>등기사항전부증명서(근저당·전세권·가압류 포함)</td></tr>
+      <tr><td>부동산 종합정보</td><td>일사편리 kras.go.kr</td><td>토지·건축물·이용계획·개별공시지가 통합</td></tr>
+      <tr><td>공시가격</td><td>부동산공시가격알리미 realtyprice.kr</td><td>개별공시지가·공동주택가격</td></tr>
+      <tr><td>모르는 조상 명의 토지</td><td>조상땅찾기 (시군구 지적부서 / K-Geo플랫폼)</td><td>온라인은 2008년 이후 사망자만. 주민번호 있으면 전국 조회</td></tr>
+      <tr><td>본인 신용·대출·보증·보험</td><td><b>크레딧포유</b> credit4u.or.kr</td><td>생전에 본인이 직접. 채무보증정보·채권자변동정보 포함</td></tr>
+      <tr><td>흩어진 계좌</td><td>어카운트인포 payinfo.or.kr</td><td>휴면계좌 정리</td></tr>
+      <tr><td>가입 보험</td><td>내보험찾아줌 (생·손보협회)</td><td>계약자·수익자 지정 상태 점검</td></tr>
+      <tr><td>연금</td><td>통합연금포털(금감원), 국민연금 내연금</td><td>수급 개시·유족연금 요건</td></tr>
+      <tr><td>미수령 주식·배당금</td><td>한국예탁결제원 ta.ksd.or.kr</td><td>실기주과실</td></tr>
+      <tr><td>자동차</td><td>자동차민원 대국민포털 car365.go.kr</td><td>등록원부 갑부(소유·압류)·을부(저당)</td></tr>
+      <tr><td>주택연금 잔액</td><td>한국주택금융공사 hf.go.kr</td><td>담보주택=상속재산, 대출잔액=채무</td></tr>
+      <tr><td>사전증여 내역</td><td>홈택스 「상속재산 및 사전증여재산 확인신청」</td><td>신고·결정된 것만 조회</td></tr>
+      <tr><td colspan="3" style="background:#fafbfd"><b>▼ 아래는 사망 이후 상속인이 신청하는 것</b></td></tr>
+      <tr><td>재산·채무 일괄 조회</td><td><b>안심상속 원스톱서비스</b> (정부24 / 주민센터)</td><td>금융·토지·자동차·국세·지방세·연금. 기한: <b>사망일이 속한 달의 말일부터 1년</b></td></tr>
+      <tr><td>금융 전수 조회</td><td><b>상속인 금융거래 조회</b> (금감원·은행·우체국 등)</td><td>금융채권·채무·보관금품·체납정보. <b>20일 이내</b> 처리, 3개월간 결과 열람</td></tr>
+    </table>
+
+    <div class="warn">
+      <b>조회 결과는 “계좌가 있다” 수준입니다.</b> 상속세 신고에는 <b>상속개시일 현재 잔액·평가액</b>이 필요하므로,
+      각 금융회사에서 <b>잔액증명서</b>를 따로 받아야 합니다.
+    </div>
+
+    <h3 class="h">자주 묻는 질문</h3>
+    <details class="q"><summary>재산이 10억이 안 되면 신고 안 해도 되나요?</summary>
+      <div class="ans">배우자가 계시면 일괄공제 5억 + 배우자공제 최소 5억으로 10억까지는 세금이 나오지 않는 경우가 많습니다.
+      배우자가 안 계시면 <b>5억</b>이 기준입니다. 다만 <b>세금이 0원이어도 신고를 권합니다.</b>
+      신고를 해 두면 그 평가액이 <b>미래 양도세의 취득가액</b>으로 확정되기 때문입니다. 신고하지 않으면 낮은 기준시가로 취득가액이 잡혀 나중에 양도세를 더 냅니다.</div></details>
+    <details class="q"><summary>부모님 계좌에서 생활비를 받아 썼는데 문제가 되나요?</summary>
+      <div class="ans">사회통념상 인정되는 부양·생활비는 증여가 아닙니다. 그러나 <b>금액이 크고 정기적이며 자녀 자산 형성에 쓰였다면</b> 증여로 볼 수 있습니다.
+      상속개시 전 1년 2억 / 2년 5억 기준을 넘는 인출이 있으면 사용처 소명 대상이 됩니다(4장).</div></details>
+    <details class="q"><summary>상속을 포기하면 세금도 없나요?</summary>
+      <div class="ans">포기한 사람은 상속받은 재산이 없으므로 납세의무가 없습니다. 다만 <b>사전증여를 받았다면</b> 그 부분은 여전히 합산되어 과세되고,
+      상속을 포기해도 <b>연대납세의무</b>는 받은 재산 한도에서 남을 수 있습니다. 또 후순위 상속인에게 빚이 넘어가므로 <b>4순위까지 함께</b> 정리해야 합니다.</div></details>
+    <details class="q"><summary>세금이 0원이어도 감정평가를 받는 게 좋다는 게 무슨 뜻인가요?</summary>
+      <div class="ans">상속세가 안 나오는 구간이라면, 재산을 높게 평가해도 상속세는 여전히 0원입니다.
+      그런데 그 높은 금액이 <b>미래에 팔 때의 취득가액</b>이 되므로 양도차익이 줄어 <b>양도세를 크게 아낍니다.</b>
+      감정평가 수수료(수백만원)로 양도세 수천만~수억을 줄이는 사례가 흔합니다. 8장을 보십시오.</div></details>
+    <details class="q"><summary>부모님이 아직 정정하신데 지금부터 준비하는 게 이른가요?</summary>
+      <div class="ans">오히려 늦을수록 쓸 수 있는 수단이 줄어듭니다. 사전증여 10년, 동거주택 10년, 가업상속 10년 —
+      상속세의 핵심 장치들이 전부 <b>10년 단위</b>입니다. 지금이 가장 빠른 때입니다.</div></details>
+  </div>
+</section>
+</div>
+
+  <!-- ============ SIDE ============ -->
+  <aside class="side">
+    <div class="bigtax">
+      <div class="lbl">예상 상속세 (자진신고 기준)</div>
+      <div class="val" id="sTax">0 원</div>
+      <div class="sub2" id="sTaxSub">재산을 입력하면 자동 계산됩니다</div>
+    </div>
+
+    <div class="card">
+      <div class="body" style="padding:14px 16px">
+        <div style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.03em;margin-bottom:7px">재산·채무 요약</div>
+        <div class="sum-row"><span>본래 상속재산</span><b id="sA1">0</b></div>
+        <div class="sum-row"><span>간주 상속재산</span><b id="sA2">0</b></div>
+        <div class="sum-row"><span>추정 상속재산</span><b id="sA3">0</b></div>
+        <div class="sum-row"><span>사전증여 합산</span><b id="sA4">0</b></div>
+        <div class="sum-row"><span>(−) 채무·공과금·장례비</span><b id="sD1">0</b></div>
+        <div class="sum-row total"><span>상속세 과세가액</span><b id="sBase">0</b></div>
+        <div class="sum-row"><span>(−) 상속공제 합계</span><b id="sDed">0</b></div>
+        <div class="sum-row total"><span>과세표준</span><b id="sTb">0</b></div>
+        <div class="tiny muted" style="margin-top:8px" id="sRate">적용 한계세율 —</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="body" style="padding:14px 16px">
+        <div style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.03em;margin-bottom:7px">파악 진행률</div>
+        <div class="bar"><i id="pgBar" style="width:0%"></i></div>
+        <div class="tiny muted" id="pgTxt">체크리스트 0 / 0</div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<div class="foot">
+  <b>면책 및 이용 안내</b><br>
+  이 워크북은 상속 개시 전 재산·채무를 정리하기 위한 <b>사전 준비 도구</b>이며, 세액은 입력값에 기초한 <b>개략적 추정치</b>입니다.
+  배우자상속공제 한도, 상속공제 종합한도(상증세법 제24조), 가업·영농상속공제 요건, 세대생략 할증, 단기재상속 세액공제 등은
+  단순화하여 반영했으므로 실제 신고세액과 다를 수 있습니다. 최종 판단은 반드시 담당 세무대리인의 검토를 거치십시오.<br>
+  법령 기준일: 2026년 8월 20일. 유산취득세 전환 및 세율·공제 개편안은 2026년 8월 현재 <b>입법되지 않았으며</b> 현행 유산세 방식·현행 공제 기준으로 계산합니다.
+</div>
+
+<script>
+/* =========================================================
+   상속재산 사전 정리 워크북 — 계산 엔진
+   법령 기준일: 2026-08-20 (현행 유산세 방식, 세율 10~50%)
+   ========================================================= */
+
+const 억 = 100000000, 만 = 10000;
+
+/* ---------- 재산 카테고리 정의 ---------- */
+const ASSETS = [
+{ id:'re', ic:'🏠', bg:'#eef4fb', name:'부동산', fin:false,
+  desc:'아파트·주택·토지·상가·오피스텔 등',
+  cols:['소재지 / 물건명','평가액(원)','비고'],
+  find:['대법원 인터넷등기소(iros.go.kr) 등기사항전부증명서 — 소유권·근저당·전세권·가압류','일사편리(kras.go.kr) 부동산종합증명서','부동산공시가격알리미(realtyprice.kr) 개별공시지가·공동주택가격','모르는 토지: 조상땅찾기(시군구 지적부서 / K-Geo플랫폼)','국토부 실거래가 공개시스템 — 유사매매사례'],
+  docs:['등기사항전부증명서','토지·건축물대장','공시가격 확인원','임대차계약서(있는 경우)','대출 잔액증명서'],
+  val:'시가(매매·감정·수용·경매·공매가액) 우선. 시가가 없으면 개별공시지가·공동주택가격 등 기준시가. 아파트는 유사매매사례가액이 시가로 잡히는 경우가 많음.',
+  caution:['임대보증금은 <b>채무</b>로, 임차인에게 받을 돈은 <b>채권</b>으로 따로 잡습니다.','상가·꼬마빌딩·토지는 기준시가와 시세 차이가 커 <b>국세청 감정평가 대상</b>이 되기 쉽습니다(8장).','근저당이 설정된 재산은 상증세법 제66조 평가특례(담보채권액과 비교) 적용 여부를 확인합니다.'],
+  pre:'등기부·공시가격·임대차 현황을 한 표로 정리하고, 최근 3년 인근 실거래가를 함께 기록해 두십시오.' },
+
+{ id:'dep', ic:'💰', bg:'#effaf3', name:'예금 · 현금 · 보험 해약환급금', fin:true,
+  desc:'은행·저축은행·상호금융 예적금, 현금, CMA 등',
+  cols:['금융기관 / 계좌','평가액(원)','비고'],
+  find:['생전: 어카운트인포(payinfo.or.kr)로 흩어진 계좌 확인','생전: 각 은행 인터넷뱅킹 전체계좌 조회','사후: 안심상속 원스톱서비스 / 상속인 금융거래 조회(금감원)','상속개시일 현재 <b>잔액증명서</b>는 각 금융회사에서 별도 발급'],
+  docs:['잔액증명서(상속개시일 기준)','최근 2년 거래내역서','예금거래 신고서'],
+  val:'예금·적금은 <b>원금 + 상속개시일까지 미수이자</b> − 원천징수세액.',
+  caution:['<b>상속개시 전 2년간 거래내역</b>은 세무조사에서 전수 확인됩니다. 큰돈이 나갔다면 사용처 증빙을 남기십시오(4장).','타인 명의 차명계좌는 실질귀속에 따라 상속재산에 포함될 수 있습니다.','<b>금융재산상속공제(최대 2억)</b> 대상입니다.'],
+  pre:'휴면계좌·소액계좌를 정리해 계좌 수를 줄이고, 주거래 계좌 목록을 가족이 알 수 있게 남겨 두십시오.' },
+
+{ id:'stk', ic:'📈', bg:'#effaf3', name:'주식 · 채권 · 펀드', fin:true,
+  desc:'상장주식, 비상장주식, 채권, 수익증권, 가상자산',
+  cols:['종목 / 발행사','평가액(원)','수량·비고'],
+  find:['증권사 계좌 잔고 — HTS/MTS 또는 잔고증명서','한국예탁결제원(ta.ksd.or.kr) 미수령주식·미수령배당금','비상장주식: 주주명부, 법인 주식등변동상황명세서','가상자산: 거래소 보유내역'],
+  docs:['잔고증명서(상속개시일 기준)','비상장법인 최근 3년 재무제표·법인세 신고서','주주명부'],
+  val:'<b>상장주식</b>: 평가기준일 이전·이후 각 2개월(총 4개월) 최종시세가액의 평균액.<br><b>비상장주식</b>: 순손익가치와 순자산가치를 3:2(부동산과다보유법인 2:3) 가중평균, 순자산가치의 80% 하한.<br><b>가상자산</b>: 국세청장 고시 사업자 거래분은 평가기준일 전·이후 각 1개월 일평균가액의 평균액.',
+  caution:['<b>최대주주 할증평가</b>(원칙 20% 할증) 대상인지 확인하십시오. 중소기업 등은 제외됩니다.','최대주주 보유 주식은 <b>금융재산상속공제 대상에서 제외</b>됩니다.','비상장주식은 평가액이 크게 흔들리므로 사전에 가치평가를 해 두는 것이 좋습니다.'],
+  pre:'비상장법인 지분이 있다면 가업상속공제 요건(10년 경영·지분 40%/20%·대표이사 재직)을 지금 점검하십시오.' },
+
+{ id:'art', ic:'🖼', bg:'#fffaeb', name:'미술품 · 귀금속 · 골동품', fin:false,
+  desc:'서화, 골동품, 보석, 금괴, 명품시계 등',
+  cols:['품명','평가액(원)','취득시기·비고'],
+  find:['소장품 목록과 사진','구입 영수증·계약서·감정서','화랑·경매사 낙찰가 자료'],
+  docs:['감정평가서(전문가 2인 이상)','구입 증빙','보관 장소 기록'],
+  val:'판매용이 아닌 <b>서화·골동품</b>은 전문분야별 <b>2인 이상 전문가의 감정가액 평균액</b>. 다만 그 가액이 국세청장 위촉 전문가로 구성된 감정평가심의회 심의 감정가액에 미달하면 <b>심의 감정가액</b>을 적용합니다. 일반 동산(귀금속 등)은 <b>재취득가액</b>이 원칙.',
+  caution:['현물이라 파악이 어렵고 유족이 존재조차 모르는 경우가 많습니다. <b>목록화가 최우선</b>입니다.','고가 미술품은 거래 기록이 남으므로 누락 시 적발 가능성이 있습니다.'],
+  pre:'품명·취득시기·취득가·보관장소·감정서 유무를 표로 만들고 사진을 남기십시오.' },
+
+{ id:'car', ic:'🚗', bg:'#eef4fb', name:'차량 · 선박 · 항공기', fin:false,
+  desc:'자동차, 이륜차, 보트, 건설기계 등',
+  cols:['차종 / 등록번호','평가액(원)','비고'],
+  find:['자동차민원 대국민포털(car365.go.kr) 등록원부 갑부·을부','사후: 안심상속 원스톱서비스(자동차 항목은 접수 즉시 통보)'],
+  docs:['자동차등록원부','중고차 시세 자료','저당권 설정 확인서'],
+  val:'시가(중고 매매사례) 우선. 시가가 불분명하면 재취득가액, 그것도 어려우면 지방세법상 시가표준액.',
+  caution:['등록원부 <b>을부</b>의 저당권을 확인해 채무공제 대상을 빠뜨리지 마십시오.','상속 시 자동차 이전등록 기한과 취득세 신고를 놓치지 않도록 합니다.'],
+  pre:'차량 등록증 사본과 저당 여부를 정리해 두십시오.' },
+
+{ id:'pen', ic:'🏦', bg:'#f4fbfa', name:'연금 · 주택연금', fin:false,
+  desc:'국민연금, 퇴직연금, 개인연금, 주택연금(역모기지)',
+  cols:['종류 / 기관','금액(원)','비고'],
+  find:['국민연금공단(nps.or.kr) 내 연금 알아보기','금감원 통합연금포털 — 전 금융권 연금 조회','한국주택금융공사(hf.go.kr) 주택연금 대출잔액'],
+  docs:['연금 가입증명·수급내역','주택연금 대출잔액확인서'],
+  val:'정기금을 받을 권리는 상증세법 제65조 및 시행령에 따라 <b>현재가치로 할인</b>하여 평가합니다.',
+  caution:['<b class="pill g">국민연금 유족연금·반환일시금은 상속재산이 아닙니다.</b> 유족의 고유재산입니다(제10조 단서, 시행령 제6조). 공무원·사학·군인연금의 유족급여, 산재 유족보상금도 같습니다.','<b class="pill r">단, 생전에 수급권이 발생했으나 못 받은 미지급 노령연금</b>은 상속재산에 포함됩니다.','<b>주택연금</b>: 담보주택은 <b>상속재산</b>, 그동안 받은 월지급금+이자+보증료 합계인 <b>대출잔액은 채무</b>입니다. 처분 후 남으면 상속인 귀속, 모자라도 상속인에게 청구하지 않습니다(비소구).','개인연금(연금저축·연금보험)의 사망 시 지급액은 계약 구조에 따라 상속재산 또는 간주상속재산이 됩니다.'],
+  pre:'주택연금 가입자라면 현재 대출잔액을 확인해 두십시오. 배우자 승계 여부에 따라 정산 시점이 달라집니다.' },
+
+{ id:'psl', ic:'🏗', bg:'#fffaeb', name:'분양권 · 조합원 입주권', fin:false,
+  desc:'아파트 분양권, 재개발·재건축 입주권',
+  cols:['단지 / 동호수','평가액(원)','납입액·프리미엄'],
+  find:['분양계약서·납입영수증','시행사·조합 조합원명부','국토부 실거래가 — 분양권 거래 사례'],
+  docs:['분양계약서','납입내역서','중도금대출 잔액증명','조합원 자격 확인서'],
+  val:'시가(유사 분양권 매매사례) 우선. 시가가 없으면 <b>상속개시일까지 납입한 금액 + 상속개시일 현재 프리미엄 상당액</b>.',
+  caution:['<b>중도금 대출</b>은 채무로 별도 계상합니다.','조합원 입주권은 종전자산 평가액·청산금 관계에 따라 계산이 복잡하므로 별도 검토가 필요합니다.','분양권은 등기가 없어 유족이 존재를 모르는 경우가 많습니다.'],
+  pre:'분양계약서 원본 보관 장소와 중도금 대출 은행을 기록해 두십시오.' },
+
+{ id:'mem', ic:'⛳', bg:'#effaf3', name:'회원권 (골프 · 콘도 · 헬스)', fin:false,
+  desc:'골프회원권, 콘도회원권, 스포츠·리조트 회원권',
+  cols:['시설명','평가액(원)','입회금·비고'],
+  find:['회원증서·입회계약서','회원권 거래소 시세','해당 시설 운영사에 명의 확인'],
+  docs:['회원증서','입회계약서(보증금 반환 약정일 확인)','시세 자료'],
+  val:'회원권 자체는 시가(매매사례) 우선.<br><b>입회금(예탁금) 반환채권</b>은 회수기간이 5년을 초과하면 각 연도 회수금액을 <b>적정할인율로 현재가치 할인</b>한 합계액으로 평가합니다. 회수기간이 정해지지 않았으면 <b>5년</b>으로 봅니다.<span class="law">시행령 제58조②</span><span class="law">시행규칙 제18조의2②1호</span>',
+  caution:['명의개서에 시설 운영사의 승인이 필요한 경우가 많아 절차가 오래 걸립니다.','시세가 급락한 회원권도 상속개시일 시가로 평가합니다.'],
+  pre:'회원권 명의·입회금·반환 약정일을 확인해 기록하십시오.' },
+
+{ id:'clm', ic:'📄', bg:'#eef4fb', name:'상속채권 — 받을 돈', fin:false,
+  desc:'빌려준 돈, 임대보증금 반환채권, 매매대금 잔금, 미수 급여 등',
+  cols:['채무자 / 내용','평가액(원)','회수 예정·비고'],
+  find:['차용증·금전소비대차계약서','통장 이체내역(계좌 전수 확인)','임대차계약서, 부동산임대공급가액명세서','소송 중이면 법원 나의사건검색'],
+  docs:['차용증·계약서','이체내역','채무자 확인서','판결문·지급명령'],
+  val:'원본 회수기간이 5년 초과이거나 무이자인 경우 현재가치 할인 평가. 소송 중인 권리는 상증세법 제65조에 따라 평가.',
+  caution:['<b>가장 많이 누락되는 항목</b>입니다. 특히 가족·지인에게 빌려준 돈.','회수불능이 객관적으로 입증되면 제외할 수 있으나 <b>입증책임은 납세자</b>에게 있습니다.','생전에 나간 돈은 채권으로 잡히는 동시에 <b>추정상속재산</b> 문제도 생기므로 정리가 필요합니다.'],
+  pre:'빌려준 돈은 <b>차용증을 지금 받아 두십시오.</b> 이자를 실제로 받고 있다면 계좌이체 기록을 남기십시오.' },
+
+{ id:'etc', ic:'📦', bg:'#f4fbfa', name:'사업용 재산 · 기타', fin:false,
+  desc:'사업장 재고·매출채권·시설, 특허·상표권, 조합 출자금, 상조 납입금',
+  cols:['항목','평가액(원)','비고'],
+  find:['사업자라면 재무상태표·재고자산명세서','특허로(patent.go.kr) 등록 지식재산권','조합·계 출자금 확인','상조회사 납입내역'],
+  docs:['재무제표','재고·채권 명세','권리 등록원부'],
+  val:'무체재산권은 상증세법 제64조 — 장래 수입금액을 현재가치로 환산하거나 취득가액에서 감가상각비를 뺀 금액 중 큰 금액.',
+  caution:['개인사업자의 사업용 자산·부채는 모두 상속재산·채무입니다.','사업 승계 시 <b>가업상속공제</b> 적용 가능성을 검토하십시오.'],
+  pre:'사업자라면 결산 자료를 정리하고, 사업용·가사용 재산을 구분해 두십시오.' }
+];
+
+const DEEMED = [
+ { id:'ins', ic:'🛡', bg:'#fef3f2', name:'사망보험금', fin:true, desc:'피상속인이 보험료를 부담한 부분', cols:['보험사 / 상품','보험금(원)','계약자·수익자'] },
+ { id:'trs', ic:'🗝', bg:'#fffaeb', name:'신탁재산', fin:true, desc:'피상속인이 신탁한 재산·신탁이익을 받을 권리', cols:['수탁사 / 신탁명','평가액(원)','수익자 구조'] },
+ { id:'ret', ic:'💼', bg:'#eef4fb', name:'퇴직금 · 퇴직수당 · 공로금', fin:false, desc:'국민연금 유족연금·반환일시금은 제외', cols:['지급기관','금액(원)','비고'] }
+];
+
+const DEBTS = [
+ { id:'dfin', ic:'🏦', bg:'#fef3f2', name:'금융기관 채무', fin:true, desc:'대출·카드대금·지급보증 (원금 + 미지급이자)', cols:['금융기관 / 종류','잔액(원)','담보·비고'] },
+ { id:'dlea', ic:'🔑', bg:'#eef4fb', name:'임대보증금 반환채무', fin:false, desc:'임차인에게 돌려줘야 할 보증금', cols:['소재지 / 임차인','금액(원)','계약만료일'] },
+ { id:'dpri', ic:'✍️', bg:'#fffaeb', name:'사인간 채무 · 기타', fin:false, desc:'개인 차입금, 병원비 미납액, 사용인 퇴직금 등', cols:['채권자 / 내용','금액(원)','증빙 보유 여부'] },
+ { id:'dtax', ic:'🧾', bg:'#f4fbfa', name:'공과금', fin:false, desc:'상속개시일 현재 미납 조세·공공요금', cols:['항목','금액(원)','비고'] }
+];
+
+const PREP = [
+ '재산 목록표 작성 (부동산·금융·주식·기타 전 항목)',
+ '부동산 등기사항전부증명서 · 공시가격 확인원 발급',
+ '전 금융기관 계좌 목록 정리, 휴면·소액계좌 정리(어카운트인포)',
+ '크레딧포유에서 본인 신용정보 열람 — 대출·보증·채권자변동 확인',
+ '가입 보험 전수 확인(내보험찾아줌) 및 계약자·피보험자·수익자 점검',
+ '연금 현황 확인(통합연금포털·국민연금)',
+ '빌려준 돈에 대한 차용증 확보 · 이자 수령 계좌기록 정리',
+ '빌린 돈(사인간 채무)에 대한 차용증·공증·근저당 설정',
+ '과거 10년간 증여 내역 정리 (증여세 신고 여부 포함)',
+ '홈택스 「상속재산 및 사전증여재산 확인신청」 결과 보관',
+ '최근 2년 계좌 거래내역 중 고액 인출·이체의 사용처 메모',
+ '병원비·간병비는 피상속인 본인 계좌·카드로 결제하도록 정리',
+ '동거주택상속공제 요건(10년 동거·1세대1주택·상속인 무주택) 점검',
+ '가업상속공제 요건(10년 경영·지분율·대표이사 재직) 점검',
+ '유언(가급적 공정증서) 작성 여부 결정',
+ '상속인 관계 정리 — 재혼·입양·대습 여부 확인, 가족관계등록부 발급',
+ '예상 상속세 산출 및 납부 재원(현금·보험·담보) 계획 수립',
+ '중요 서류 보관 장소를 가족에게 공유'
+];
+
+/* ---------- 상태 ---------- */
+const S = {
+  rows:{}, gifts:[], presume:[], checks:{},
+  heir:{ spouse:1, child:2, parent:0, minorYears:0, elder:0, disabledYears:0 },
+  ded:{ spouseActual:0, useUnified:1, home:0, homeDebt:0, disaster:0, biz:0, farm:0, apprFee:0, funeral:5000000, funeralUrn:0 },
+  extra:{ nonTax:0, giftTaxCredit:0, genSkip:0 },
+  appr:{ base:0, apprValue:0, sellPrice:0, transferRate:0.264, fee:3000000 }
+};
+[...ASSETS,...DEEMED,...DEBTS].forEach(c=>S.rows[c.id]=[]);
+
+/* ---------- 유틸 ---------- */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const cm=n=>(Math.round(n)||0).toLocaleString('ko-KR');
+function kw(n){
+  n=Math.round(n||0); if(!n) return '0원';
+  const sign=n<0?'−':''; n=Math.abs(n);
+  const jo=Math.floor(n/1e12), eok=Math.floor(n%1e12/1e8), man=Math.floor(n%1e8/1e4), won=n%1e4;
+  let s='';
+  if(jo) s+=jo+'조 '; if(eok) s+=cm(eok)+'억 '; if(man) s+=cm(man)+'만 ';
+  if(won||!s) s+=cm(won)+'';
+  return sign+s.trim()+'원';
+}
+function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function numify(el){ let v=el.value.replace(/[^\d-]/g,''); let n=parseInt(v||'0',10)||0; el.value=n?cm(n):''; return n; }
+
+/* ---------- 재산/채무 카테고리 렌더 ---------- */
+function catHTML(c, kind){
+  const info = c.find ? `
+    <div class="grid2">
+      <div class="infobox"><h5>어디서 확인하나</h5><ul>${c.find.map(x=>'<li>'+x+'</li>').join('')}</ul></div>
+      <div class="infobox"><h5>필요 서류</h5><ul>${c.docs.map(x=>'<li>'+x+'</li>').join('')}</ul></div>
+    </div>
+    <div class="infobox" style="margin-top:10px"><h5>평가 방법</h5><div>${c.val}</div></div>
+    <div class="infobox" style="margin-top:10px"><h5>유의점</h5><ul>${c.caution.map(x=>'<li>'+x+'</li>').join('')}</ul></div>
+    <div class="ok" style="margin-top:10px;font-size:12.8px"><b>사전 준비 —</b> ${c.pre}</div>` : '';
+  return `<div class="acat" id="cat_${c.id}">
+    <div class="head" onclick="toggleCat('${c.id}')">
+      <div class="ic" style="background:${c.bg}">${c.ic}</div>
+      <div><div class="ttl">${c.name}${c.fin?' <span class="pill g" style="font-size:10px">금융재산</span>':''}</div><div class="desc">${c.desc}</div></div>
+      <div class="sum" id="sum_${c.id}">0원<small>0건</small></div>
+      <div class="chev">▶</div>
+    </div>
+    <div class="panel">${info}
+      <table class="rows"><thead><tr>
+        <th style="width:40%">${c.cols[0]}</th><th style="width:26%">${c.cols[1]}</th><th>${c.cols[2]}</th><th style="width:32px"></th>
+      </tr></thead><tbody id="tb_${c.id}"></tbody></table>
+      <button class="addbtn" onclick="addRow('${c.id}')">+ 항목 추가</button>
+    </div></div>`;
+}
+function toggleCat(id){ document.getElementById('cat_'+id).classList.toggle('open') }
+function addRow(id){ S.rows[id].push({n:'',v:0,m:''}); drawRows(id); recalc();
+  const tb=document.getElementById('tb_'+id); const i=tb.querySelector('tr:last-child input'); if(i) i.focus(); }
+function delRow(id,i){ S.rows[id].splice(i,1); drawRows(id); recalc(); }
+function drawRows(id){
+  const tb=document.getElementById('tb_'+id); if(!tb) return;
+  tb.innerHTML = S.rows[id].map((r,i)=>`<tr>
+    <td><input type="text" value="${esc(r.n)}" oninput="S.rows['${id}'][${i}].n=this.value" placeholder="—"></td>
+    <td><input type="text" class="num" value="${r.v?cm(r.v):''}" oninput="S.rows['${id}'][${i}].v=numify(this);recalc()" placeholder="0"></td>
+    <td><input type="text" value="${esc(r.m)}" oninput="S.rows['${id}'][${i}].m=this.value" placeholder="—"></td>
+    <td><button class="del" onclick="delRow('${id}',${i})" title="삭제">×</button></td></tr>`).join('') ||
+    `<tr><td colspan="4" class="tiny muted" style="padding:10px 6px">아직 입력한 항목이 없습니다. 아래 <b>+ 항목 추가</b>를 눌러 시작하십시오.</td></tr>`;
+}
+function catSum(id){ return (S.rows[id]||[]).reduce((a,r)=>a+(r.v||0),0) }
+
+/* ---------- 사전증여 ---------- */
+function drawGifts(){
+  const tb=$('#tbGift');
+  tb.innerHTML = S.gifts.map((g,i)=>`<tr>
+    <td><input type="text" value="${esc(g.n)}" oninput="S.gifts[${i}].n=this.value" placeholder="수증자 / 재산"></td>
+    <td><select onchange="S.gifts[${i}].heir=+this.value;recalc()" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:6px">
+      <option value="1"${g.heir?' selected':''}>상속인 (10년)</option><option value="0"${!g.heir?' selected':''}>상속인 아님 (5년)</option></select></td>
+    <td><input type="text" class="num" value="${g.y||''}" oninput="S.gifts[${i}].y=this.value.replace(/[^\\d]/g,'');recalc()" placeholder="예: 2019"></td>
+    <td><input type="text" class="num" value="${g.v?cm(g.v):''}" oninput="S.gifts[${i}].v=numify(this);recalc()" placeholder="0"></td>
+    <td><input type="text" class="num" value="${g.b?cm(g.b):''}" oninput="S.gifts[${i}].b=numify(this);recalc()" placeholder="0"></td>
+    <td><button class="del" onclick="S.gifts.splice(${i},1);drawGifts();recalc()">×</button></td></tr>`).join('') ||
+    `<tr><td colspan="6" class="tiny muted" style="padding:10px 6px">사전증여가 없으면 비워 두십시오.</td></tr>`;
+}
+function giftSum(){ return S.gifts.reduce((a,g)=>a+(g.v||0),0) }
+function giftBaseSum(){ return S.gifts.reduce((a,g)=>a+(g.b||0),0) }
+
+/* ---------- 추정상속재산 ---------- */
+function drawPresume(){
+  const tb=$('#tbPre');
+  tb.innerHTML = S.presume.map((p,i)=>`<tr>
+    <td><select onchange="S.presume[${i}].k=this.value;recalc()" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:6px">
+      ${['현금·예금·유가증권','부동산 및 부동산에 관한 권리','그 밖의 재산','채무 부담액'].map(k=>`<option${p.k===k?' selected':''}>${k}</option>`).join('')}</select></td>
+    <td><select onchange="S.presume[${i}].p=+this.value;recalc()" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:6px">
+      <option value="1"${p.p===1?' selected':''}>1년 이내 (기준 2억)</option><option value="2"${p.p===2?' selected':''}>2년 이내 (기준 5억)</option></select></td>
+    <td><input type="text" class="num" value="${p.t?cm(p.t):''}" oninput="S.presume[${i}].t=numify(this);recalc()" placeholder="0"></td>
+    <td><input type="text" class="num" value="${p.u?cm(p.u):''}" oninput="S.presume[${i}].u=numify(this);recalc()" placeholder="0"></td>
+    <td class="n" id="preR${i}">—</td>
+    <td><button class="del" onclick="S.presume.splice(${i},1);drawPresume();recalc()">×</button></td></tr>`).join('') ||
+    `<tr><td colspan="6" class="tiny muted" style="padding:10px 6px">해당 사항이 없으면 비워 두십시오.</td></tr>`;
+}
+function presumeCalc(){
+  let total=0;
+  S.presume.forEach((p,i)=>{
+    const thr = p.p===2 ? 5*억 : 2*억;
+    let add=0;
+    if((p.t||0) >= thr){
+      const unproven = Math.max(0,(p.t||0)-(p.u||0));
+      add = Math.max(0, unproven - Math.min((p.t||0)*0.2, 2*억));
+    }
+    const cell=document.getElementById('preR'+i);
+    if(cell) cell.innerHTML = (p.t||0)>=thr ? `<b style="color:var(--red)">${cm(add)}</b>` : `<span class="muted">기준 미달</span>`;
+    total+=add;
+  });
+  return total;
+}
+
+/* ---------- 상속인 / 법정상속분 ---------- */
+function heirShares(){
+  const h=S.heir;
+  const kids=+h.child||0, sp=+h.spouse?1:0, par=+h.parent||0;
+  let spouseShare=0, unit=0;
+  if(kids>0){ const denom=kids + (sp?1.5:0); spouseShare = sp?1.5/denom:0; unit=1/denom; }
+  else if(par>0){ const denom=par + (sp?1.5:0); spouseShare = sp?1.5/denom:0; unit=1/denom; }
+  else if(sp){ spouseShare=1; unit=0; }
+  return {spouseShare, unit, kids, sp, par};
+}
+
+/* ---------- 세율 ---------- */
+function taxOf(base){
+  base=Math.max(0,base);
+  if(base<=1*억) return {t:base*0.10, r:10};
+  if(base<=5*억) return {t:base*0.20-1000*만, r:20};
+  if(base<=10*억) return {t:base*0.30-6000*만, r:30};
+  if(base<=30*억) return {t:base*0.40-16000*만, r:40};
+  return {t:base*0.50-46000*만, r:50};
+}
+
+/* ---------- 메인 계산 ---------- */
+function recalc(){
+  // 재산
+  const A1 = ASSETS.reduce((a,c)=>a+catSum(c.id),0);
+  const A2 = DEEMED.reduce((a,c)=>a+catSum(c.id),0);
+  const A3 = presumeCalc();
+  const A4 = giftSum();
+  // 채무
+  const debtRaw = DEBTS.reduce((a,c)=>a+catSum(c.id),0);
+  const funeral = Math.min(Math.max(S.ded.funeral||0,0), 10000000) + Math.min(Math.max(S.ded.funeralUrn||0,0), 5000000);
+  const D1 = debtRaw + funeral;
+  // 금융재산
+  const finAsset = [...ASSETS,...DEEMED].filter(c=>c.fin).reduce((a,c)=>a+catSum(c.id),0);
+  const finDebt  = DEBTS.filter(c=>c.fin).reduce((a,c)=>a+catSum(c.id),0);
+  const netFin = Math.max(0, finAsset-finDebt);
+
+  const nonTax = S.extra.nonTax||0;
+  const gross = A1+A2+A3;
+  const taxable = Math.max(0, gross - nonTax - D1 + A4);   // 상속세 과세가액
+
+  // ---- 공제 ----
+  const h=S.heir, sh=heirShares();
+  // 인적
+  const personal = 2*억 + (+h.child||0)*5000*만 + (+h.minorYears||0)*1000*만
+                 + (+h.elder||0)*5000*만 + (+h.disabledYears||0)*1000*만;
+  const spouseOnly = (sh.sp && !sh.kids && !sh.par);
+  const lump = spouseOnly ? 0 : 5*억;              // 배우자 단독상속 시 일괄공제 불가
+  const basicDed = Math.max(personal, lump);
+
+  // 배우자
+  let spouseDed=0, spouseLimit=0;
+  if(sh.sp){
+    const legalBase = Math.max(0, gross - nonTax - D1 + A4);
+    spouseLimit = Math.min(legalBase*sh.spouseShare, 30*억);
+    spouseDed = Math.max(5*억, Math.min(S.ded.spouseActual||0, spouseLimit));
+  }
+  // 금융재산
+  let finDed=0;
+  if(netFin>0){
+    if(netFin<=2000*만) finDed=netFin;
+    else if(netFin<=1*억) finDed=2000*만;
+    else finDed=Math.min(netFin*0.2, 2*억);
+  }
+  // 동거주택
+  const homeDed = Math.min(Math.max(0,(S.ded.home||0)-(S.ded.homeDebt||0)), 6*억);
+  const disaster = S.ded.disaster||0, bizDed=S.ded.biz||0, farmDed=S.ded.farm||0;
+
+  let dedSum = basicDed + spouseDed + finDed + homeDed + disaster + bizDed + farmDed;
+  // 공제 종합한도 (상증세법 제24조) — 사전증여 과세표준 차감분만 반영
+  const dedLimit = Math.max(0, taxable - giftBaseSum());
+  const dedCapped = Math.min(dedSum, dedLimit);
+
+  const apprFee = Math.min(S.ded.apprFee||0, 15000000);
+  const tb = Math.max(0, taxable - dedCapped - apprFee);
+  const {t:calcTax, r:rate} = taxOf(tb);
+  const genSkip = calcTax * ((S.extra.genSkip||0)/100);
+  const beforeCredit = calcTax + genSkip;
+  const giftCredit = Math.min(S.extra.giftTaxCredit||0, beforeCredit);
+  const afterGift = Math.max(0, beforeCredit - giftCredit);
+  const filingCredit = afterGift*0.03;
+  const final = Math.max(0, afterGift - filingCredit);
+
+  // ---- 출력: 사이드 ----
+  $('#sA1').textContent=cm(A1); $('#sA2').textContent=cm(A2); $('#sA3').textContent=cm(A3);
+  $('#sA4').textContent=cm(A4); $('#sD1').textContent=cm(D1);
+  $('#sBase').textContent=cm(taxable); $('#sDed').textContent=cm(dedCapped); $('#sTb').textContent=cm(tb);
+  $('#sTax').textContent=kw(final);
+  $('#sRate').textContent = tb>0 ? `적용 한계세율 ${rate}%` : '과세표준 없음';
+  $('#sTaxSub').innerHTML = tb>0
+    ? `과세표준 ${kw(tb)} · 산출세액 ${kw(calcTax)}<br>신고세액공제 3% 반영 후`
+    : (taxable>0 ? '공제 범위 내로 납부할 세액이 없습니다' : '재산을 입력하면 자동 계산됩니다');
+
+  // 카테고리 합계
+  [...ASSETS,...DEEMED,...DEBTS].forEach(c=>{
+    const el=document.getElementById('sum_'+c.id);
+    if(el){ const s=catSum(c.id), n=(S.rows[c.id]||[]).length;
+      el.innerHTML = `${cm(s)}원<small>${n}건</small>`; }
+  });
+
+  // 계산 상세표
+  const row=(l,v,cls='')=>`<tr class="${cls}"><td>${l}</td><td class="n">${cm(v)}</td></tr>`;
+  $('#calcHost').innerHTML = `
+  <table class="t" style="margin-top:4px">
+    <tr><th style="width:62%">항목</th><th class="n">금액 (원)</th></tr>
+    ${row('본래 상속재산',A1)}${row('(+) 간주상속재산 (보험금·신탁·퇴직금)',A2)}${row('(+) 추정상속재산',A3)}
+    ${row('(−) 비과세·과세가액 불산입',nonTax)}
+    ${row('(−) 공과금·채무',debtRaw)}${row('(−) 장례비용 (한도 반영)',funeral)}
+    ${row('(+) 사전증여재산 합산',A4)}
+    <tr style="background:#f4f7fa;font-weight:700"><td>= 상속세 과세가액</td><td class="n">${cm(taxable)}</td></tr>
+    ${row(spouseOnly?'(−) 기초공제 + 인적공제 <span class="tiny muted">(배우자 단독상속: 일괄공제 불가)</span>':'(−) 일괄공제 5억 vs 기초+인적공제 중 큰 금액',basicDed)}
+    ${sh.sp?row(`(−) 배우자상속공제 <span class="tiny muted">한도 ${cm(spouseLimit)}</span>`,spouseDed):''}
+    ${row('(−) 금융재산상속공제',finDed)}
+    ${homeDed?row('(−) 동거주택상속공제',homeDed):''}
+    ${disaster?row('(−) 재해손실공제',disaster):''}
+    ${bizDed?row('(−) 가업상속공제',bizDed):''}
+    ${farmDed?row('(−) 영농상속공제',farmDed):''}
+    <tr><td>공제 합계 <span class="tiny muted">(종합한도 ${cm(dedLimit)} 적용${dedSum>dedLimit?' — <b style="color:var(--red)">한도 초과로 축소됨</b>':''})</span></td><td class="n"><b>${cm(dedCapped)}</b></td></tr>
+    ${apprFee?row('(−) 감정평가 수수료',apprFee):''}
+    <tr style="background:#f4f7fa;font-weight:700"><td>= 과세표준</td><td class="n">${cm(tb)}</td></tr>
+    <tr><td>× 세율 (한계세율 ${rate}%)</td><td class="n">${cm(calcTax)}</td></tr>
+    ${genSkip?row('(+) 세대생략 할증',genSkip):''}
+    ${giftCredit?row('(−) 증여세액공제',giftCredit):''}
+    ${row('(−) 신고세액공제 3%',filingCredit)}
+    <tr style="background:var(--navy);color:#fff;font-weight:700"><td>= 납부할 상속세</td><td class="n">${cm(final)}</td></tr>
+  </table>
+  <p class="tiny muted">※ 배우자상속공제 한도는 법정상속분 상당액을 단순 산식으로 계산한 값입니다. 실제로는 배우자의 사전증여 과세표준 차감, 상속인 아닌 자에 대한 유증액 차감 등이 반영되어야 합니다.</p>`;
+
+  // 보험 필요액
+  const cash = finAsset;
+  const need = Math.max(0, final - cash);
+  $('#insCalc').innerHTML = `
+    <div class="sum-row"><span>예상 상속세</span><b>${cm(final)}원</b></div>
+    <div class="sum-row"><span>상속재산 중 금융재산(현금화 가능)</span><b>${cm(cash)}원</b></div>
+    <div class="sum-row total"><span>부족한 납부 재원</span><b style="color:${need>0?'var(--red)':'var(--green)'}">${cm(need)}원</b></div>
+    <p class="tiny muted" style="margin-top:8px">${need>0
+      ? '이 금액만큼을 <b>사망보험금</b>으로 준비해 두면 부동산을 급매하거나 연부연납 가산금을 물지 않아도 됩니다. 계약자·수익자는 자녀, 보험료는 자녀 소득으로 납입하는 구조가 가장 유리합니다.'
+      : '현재 입력 기준으로는 금융재산만으로 납부가 가능합니다. 다만 금융재산은 상속인 간 분할 대상이므로 실제 배분을 확인하십시오.'}</p>`;
+
+  // 납부 방법 안내
+  const canInstall = final>10000000, canYeon = final>20000000;
+  const realish = ASSETS.filter(c=>['re','psl'].includes(c.id)).reduce((a,c)=>a+catSum(c.id),0) + catSum('stk');
+  const canMulnap = canYeon && gross>0 && realish/Math.max(gross,1) > 0.5 && final > finAsset;
+  $('#payHost').innerHTML = `
+    <h3 class="h">내 경우 가능한 납부 방법</h3>
+    <table class="t">
+      <tr><th style="width:22%">방법</th><th style="width:18%">가능 여부</th><th>판정 근거</th></tr>
+      <tr><td>분납</td><td>${canInstall?'<b class="pill g">가능</b>':'<span class="pill">해당 없음</span>'}</td><td>납부세액 ${cm(final)}원 (기준 1,000만원 초과)</td></tr>
+      <tr><td>연부연납</td><td>${canYeon?'<b class="pill g">가능</b>':'<span class="pill">해당 없음</span>'}</td><td>납부세액 ${cm(final)}원 (기준 2,000만원 초과) · 담보 제공 필요</td></tr>
+      <tr><td>물납</td><td>${canMulnap?'<b class="pill a">검토 대상</b>':'<span class="pill">요건 미충족</span>'}</td><td>부동산·유가증권 비중 ${gross?Math.round(realish/gross*100):0}% (50% 초과 필요) · 납부세액 > 금융재산 ${final>finAsset?'충족':'미충족'}</td></tr>
+    </table>
+    ${canYeon?`<div class="note"><b>연부연납 10년 분할 시 대략</b> — 1회차 ${cm(final/11)}원, 이후 10회 각 ${cm(final/11)}원 + 가산금.
+      각 회분이 1,000만원을 초과해야 하므로 ${final/11>10000000?'요건을 충족합니다':'<b style="color:var(--red)">기간을 줄여야 합니다</b>'}.</div>`:''}`;
+
+  // 진행률
+  const totalChk=$$('.chk input').length;
+  const done=$$('.chk input:checked').length;
+  $('#pgBar').style.width = totalChk?(done/totalChk*100)+'%':'0%';
+  $('#pgTxt').textContent = `체크리스트 ${done} / ${totalChk}`;
+
+  apprCalc(rate);
+}
+
+/* ---------- 감정평가 시뮬레이션 ---------- */
+function apprCalc(marginalRate){
+  const a=S.appr;
+  const diff = Math.max(0,(a.apprValue||0)-(a.base||0));
+  const mr = (a.useAuto!==0? marginalRate : a.manualRate||marginalRate)/100;
+  const upTax = diff*mr;
+  const saveCGT = diff*(a.transferRate||0);
+  const feeNet = Math.max(0,(a.fee||0) - Math.min(a.fee||0,5000000)*mr); // 수수료 중 공제효과 반영
+  const net = saveCGT - upTax - feeNet;
+  const el=$('#apprResult'); if(!el) return;
+  el.innerHTML = `
+    <div class="sum-row"><span>평가액 상승분</span><b>${cm(diff)}원</b></div>
+    <div class="sum-row"><span>상속세 증가 (한계세율 ${Math.round(mr*100)}%)</span><b style="color:var(--red)">+ ${cm(upTax)}원</b></div>
+    <div class="sum-row"><span>향후 양도세 절감 (세율 ${(+((a.transferRate||0)*100).toFixed(1))}%)</span><b style="color:var(--green)">− ${cm(saveCGT)}원</b></div>
+    <div class="sum-row"><span>감정평가 수수료 (공제효과 반영 후 순부담)</span><b>${cm(feeNet)}원</b></div>
+    <div class="sum-row total"><span>순효과</span><b style="color:${net>=0?'var(--green)':'var(--red)'}">${net>=0?'유리 +':'불리 '}${cm(Math.abs(net))}원</b></div>
+    <div class="${net>=0?'ok':'warn'}" style="margin-top:10px;font-size:12.8px">
+      ${net>=0
+        ? '<b>감정평가가 유리합니다.</b> 상속세 증가분보다 향후 양도세 절감액이 큽니다. 다만 실제 매각 시점·장기보유특별공제·다주택 중과 여부에 따라 결과가 달라지므로 매각 계획을 함께 검토하십시오.'
+        : '<b>단순 계산상으로는 기준시가 신고가 유리합니다.</b> 그러나 ①국세청 감정평가사업 대상(차액 5억 이상 또는 10% 이상)에 해당하면 사후 감정으로 세액이 급증할 수 있고 ②그 경우에도 취득가액은 결정·경정된 가액으로 상향됩니다. 리스크를 반영해 재판단하십시오.'}
+    </div>`;
+}
+
+/* ---------- 저장 / 불러오기 ---------- */
+function saveJSON(){
+  const chk={}; $$('.chk input').forEach(i=>chk[i.dataset.k]=i.checked);
+  const data={v:1, date:new Date().toISOString(), S:{...S, checks:chk}};
+  const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const u=URL.createObjectURL(b), a=document.createElement('a');
+  a.href=u; a.download='상속재산정리_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+  URL.revokeObjectURL(u);
+}
+function loadJSON(inp){
+  const f=inp.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{ try{
+    const d=JSON.parse(e.target.result);
+    Object.assign(S, d.S||{});
+    [...ASSETS,...DEEMED,...DEBTS].forEach(c=>{ if(!S.rows[c.id]) S.rows[c.id]=[]; drawRows(c.id); });
+    drawGifts(); drawPresume(); syncInputs();
+    $$('.chk input').forEach(i=>{ if(S.checks && S.checks[i.dataset.k]!=null) i.checked=S.checks[i.dataset.k]; });
+    recalc(); alert('불러왔습니다.');
+  }catch(err){ alert('파일을 읽을 수 없습니다: '+err.message) } };
+  r.readAsText(f); inp.value='';
+}
+function syncInputs(){
+  $$('[data-bind]').forEach(el=>{
+    const [g,k]=el.dataset.bind.split('.');
+    const v=S[g] ? S[g][k] : undefined;
+    if(v==null) return;
+    if(el.type==='checkbox') el.checked=!!v;
+    else if(el.classList.contains('num')) el.value = v?cm(v):'';
+    else el.value=v;
+  });
+}
+
+/* ---------- 모드 ---------- */
+function setMode(pro){
+  document.body.classList.toggle('pro',!!pro);
+  $('#mPro').classList.toggle('on',!!pro); $('#mCli').classList.toggle('on',!pro);
+}
+
+/* ---------- 초기화 ---------- */
+function init(){
+  // 재산
+  $('#assetHost').innerHTML = ASSETS.map(c=>catHTML(c,'a')).join('');
+  $('#deemedHost').innerHTML = '<h3 class="h">간주상속재산 입력</h3>' + DEEMED.map(c=>catHTML(c,'d')).join('');
+  $('#debtHost').innerHTML = '<h3 class="h">상속채무 입력</h3>' + DEBTS.map(c=>catHTML(c,'x')).join('') + `
+    <div class="grid2" style="margin-top:12px">
+      <div class="field"><label>장례 직접비용 (증빙 없어도 500만원 인정 · 한도 1,000만원)</label>
+        <input type="text" class="num" data-bind="ded.funeral" oninput="S.ded.funeral=numify(this);recalc()" value="5,000,000"></div>
+      <div class="field"><label>봉안시설·자연장지 사용액 (증빙 필수 · 한도 500만원)</label>
+        <input type="text" class="num" data-bind="ded.funeralUrn" oninput="S.ded.funeralUrn=numify(this);recalc()" placeholder="0"></div>
+    </div>`;
+  [...ASSETS,...DEEMED,...DEBTS].forEach(c=>drawRows(c.id));
+  document.getElementById('cat_re').classList.add('open');
+
+  // 사전증여
+  $('#giftHost').innerHTML = `<h3 class="h">사전증여 내역 입력</h3>
+    <table class="rows"><thead><tr>
+      <th style="width:24%">수증자 / 재산</th><th style="width:19%">구분</th><th style="width:11%">증여연도</th>
+      <th style="width:19%">증여 당시 평가액</th><th style="width:19%">증여세 과세표준</th><th style="width:32px"></th></tr></thead>
+      <tbody id="tbGift"></tbody></table>
+    <button class="addbtn" onclick="S.gifts.push({n:'',heir:1,y:'',v:0,b:0});drawGifts();recalc()">+ 증여 내역 추가</button>
+    <p class="tiny muted" style="margin-top:6px">※ ‘증여세 과세표준’은 상속공제 종합한도(상증세법 제24조) 계산에 사용됩니다. 모르면 평가액에서 증여재산공제를 뺀 금액을 넣으십시오.</p>`;
+  drawGifts();
+
+  // 추정상속
+  $('#presumeHost').innerHTML = `<h3 class="h">추정상속재산 계산</h3>
+    <table class="rows"><thead><tr>
+      <th style="width:26%">재산 종류</th><th style="width:20%">기간</th><th style="width:18%">처분·인출·차입액</th>
+      <th style="width:18%">용도 입증액</th><th style="width:16%">가산액</th><th style="width:32px"></th></tr></thead>
+      <tbody id="tbPre"></tbody></table>
+    <button class="addbtn" onclick="S.presume.push({k:'현금·예금·유가증권',p:1,t:0,u:0});drawPresume();recalc()">+ 항목 추가</button>
+    <p class="tiny muted" style="margin-top:6px">※ 가산액 = 미입증액 − MIN(처분·인출·차입액 × 20%, 2억원). 기준금액(1년 2억 / 2년 5억) 미달이면 가산하지 않습니다.</p>`;
+  drawPresume();
+
+  // 상속인
+  $('#heirHost').innerHTML = `<h3 class="h">상속인 입력</h3>
+    <div class="grid2">
+      <div>
+        <div class="field"><label>배우자 (법률상 배우자)</label>
+          <select data-bind="heir.spouse" onchange="S.heir.spouse=+this.value;recalc()">
+            <option value="1">있음</option><option value="0">없음</option></select></div>
+        <div class="inline2">
+          <div class="field"><label>자녀 수 (직계비속)</label>
+            <input type="text" class="num" data-bind="heir.child" value="2" oninput="S.heir.child=numify(this);recalc()"></div>
+          <div class="field"><label>직계존속 수 <span class="tiny muted">(자녀 없을 때)</span></label>
+            <input type="text" class="num" data-bind="heir.parent" oninput="S.heir.parent=numify(this);recalc()" placeholder="0"></div>
+        </div>
+        <div class="inline2">
+          <div class="field"><label>미성년 상속인 잔여연수 합계</label>
+            <input type="text" class="num" data-bind="heir.minorYears" oninput="S.heir.minorYears=numify(this);recalc()" placeholder="0">
+            <div class="hint">19세까지 남은 햇수를 모두 더한 값 · 1년당 1,000만원</div></div>
+          <div class="field"><label>65세 이상 동거가족 수</label>
+            <input type="text" class="num" data-bind="heir.elder" oninput="S.heir.elder=numify(this);recalc()" placeholder="0">
+            <div class="hint">1인당 5,000만원 (배우자 제외)</div></div>
+        </div>
+        <div class="field"><label>장애인 상속인 기대여명 연수 합계</label>
+          <input type="text" class="num" data-bind="heir.disabledYears" oninput="S.heir.disabledYears=numify(this);recalc()" placeholder="0">
+          <div class="hint">1년당 1,000만원</div></div>
+      </div>
+      <div class="infobox"><h5>법정상속분 계산 결과</h5><div id="shareOut"></div></div>
+    </div>`;
+
+  // 공제
+  $('#dedHost').innerHTML = `<h3 class="h">공제 관련 입력</h3>
+    <div class="grid2">
+      <div class="field"><label>배우자가 실제로 상속받을 금액</label>
+        <input type="text" class="num" data-bind="ded.spouseActual" oninput="S.ded.spouseActual=numify(this);recalc()" placeholder="0">
+        <div class="hint">비워 두면 최소 5억원이 공제됩니다. 법정상속분 상당액과 30억 중 작은 금액이 한도입니다.</div></div>
+      <div class="field"><label>비과세·과세가액 불산입 재산</label>
+        <input type="text" class="num" data-bind="extra.nonTax" oninput="S.extra.nonTax=numify(this);recalc()" placeholder="0">
+        <div class="hint">금양임야·묘토(2억 한도), 공익법인 출연재산, 국가 유증재산 등</div></div>
+      <div class="field"><label>동거주택 가액 (부수토지 포함)</label>
+        <input type="text" class="num" data-bind="ded.home" oninput="S.ded.home=numify(this);recalc()" placeholder="0">
+        <div class="hint">10년 이상 동거·1세대1주택·상속인 무주택 요건 충족 시에만 입력</div></div>
+      <div class="field"><label>동거주택에 담보된 채무</label>
+        <input type="text" class="num" data-bind="ded.homeDebt" oninput="S.ded.homeDebt=numify(this);recalc()" placeholder="0">
+        <div class="hint">주택가액에서 차감 후 6억 한도 적용</div></div>
+      <div class="field"><label>가업상속공제 대상 가액</label>
+        <input type="text" class="num" data-bind="ded.biz" oninput="S.ded.biz=numify(this);recalc()" placeholder="0">
+        <div class="hint">한도: 경영 10~20년 300억 / 20~30년 400억 / 30년 이상 600억</div></div>
+      <div class="field"><label>영농상속공제 대상 가액</label>
+        <input type="text" class="num" data-bind="ded.farm" oninput="S.ded.farm=numify(this);recalc()" placeholder="0">
+        <div class="hint">한도 30억원</div></div>
+      <div class="field"><label>재해손실공제</label>
+        <input type="text" class="num" data-bind="ded.disaster" oninput="S.ded.disaster=numify(this);recalc()" placeholder="0">
+        <div class="hint">신고기한 내 재난으로 멸실·훼손된 가액 (보험금 보전분 제외)</div></div>
+      <div class="field"><label>감정평가 수수료</label>
+        <input type="text" class="num" data-bind="ded.apprFee" oninput="S.ded.apprFee=numify(this);recalc()" placeholder="0">
+        <div class="hint">부동산 500만원 / 비상장주식 1,000만원 / 서화·골동품 500만원 한도</div></div>
+      <div class="field"><label>기납부 증여세액 (증여세액공제)</label>
+        <input type="text" class="num" data-bind="extra.giftTaxCredit" oninput="S.extra.giftTaxCredit=numify(this);recalc()" placeholder="0"></div>
+      <div class="field"><label>세대생략 할증률</label>
+        <select data-bind="extra.genSkip" onchange="S.extra.genSkip=+this.value;recalc()">
+          <option value="0">해당 없음</option><option value="30">30% (손자녀 등)</option>
+          <option value="40">40% (미성년자가 20억 초과 상속)</option></select></div>
+    </div>`;
+
+  // 감정평가 시뮬
+  $('#apprHost').innerHTML = `
+    <div class="grid2">
+      <div>
+        <div class="field"><label>대상 부동산 기준시가 (보충적 평가액)</label>
+          <input type="text" class="num" data-bind="appr.base" oninput="S.appr.base=numify(this);recalc()" placeholder="0"></div>
+        <div class="field"><label>예상 감정평가액 (시가)</label>
+          <input type="text" class="num" data-bind="appr.apprValue" oninput="S.appr.apprValue=numify(this);recalc()" placeholder="0"></div>
+        <div class="field"><label>향후 양도 시 적용 세율 (지방소득세 포함)</label>
+          <select onchange="S.appr.transferRate=+this.value;recalc()">
+            <option value="0.264">26.4% — 기본세율 24% 구간</option>
+            <option value="0.385">38.5% — 기본세율 35% 구간</option>
+            <option value="0.418">41.8% — 기본세율 38% 구간</option>
+            <option value="0.44">44.0% — 기본세율 40% 구간</option>
+            <option value="0.462">46.2% — 기본세율 42% 구간</option>
+            <option value="0.495">49.5% — 기본세율 45% 구간</option>
+            <option value="0.66">66.0% — 1년 미만 단기 양도</option>
+            <option value="0">0% — 양도 계획 없음 / 비과세</option></select>
+          <div class="hint">장기보유특별공제를 감안하면 실효세율은 더 낮아질 수 있습니다.</div></div>
+        <div class="field"><label>감정평가 수수료 (예상)</label>
+          <input type="text" class="num" data-bind="appr.fee" oninput="S.appr.fee=numify(this);recalc()" value="3,000,000"></div>
+      </div>
+      <div class="infobox"><h5>비교 결과</h5><div id="apprResult"></div></div>
+    </div>`;
+
+  // 보험
+  $('#insHost').innerHTML = `<div class="infobox"><h5>필요 보장금액 계산</h5><div id="insCalc"></div></div>`;
+
+  // 준비 체크리스트
+  $('#prepHost').innerHTML = PREP.map((p,i)=>`<label class="chk"><input type="checkbox" data-k="p${i}" onchange="recalc()"><span>${p}</span></label>`).join('');
+
+  syncInputs();
+  recalc();
+
+  // 법정상속분 출력
+  const upd=()=>{ const sh=heirShares(); const out=$('#shareOut'); if(!out) return;
+    let h='';
+    if(sh.sp) h+=`<div class="sum-row"><span>배우자</span><b>${(sh.spouseShare*100).toFixed(2)}%</b></div>`;
+    if(sh.kids>0) h+=`<div class="sum-row"><span>자녀 (각)</span><b>${(sh.unit*100).toFixed(2)}%</b> × ${sh.kids}명</div>`;
+    else if(sh.par>0) h+=`<div class="sum-row"><span>직계존속 (각)</span><b>${(sh.unit*100).toFixed(2)}%</b> × ${sh.par}명</div>`;
+    else if(sh.sp) h+=`<div class="sum-row"><span>배우자 단독상속</span><b>100%</b></div>`;
+    if(!h) h='<span class="muted tiny">상속인을 입력하십시오.</span>';
+    h+=`<p class="tiny muted" style="margin-top:8px">배우자는 직계비속·직계존속 상속분에 <b>5할을 가산</b>합니다(민법 제1009조②). 형제자매는 배우자와 공동상속하지 않습니다.</p>`;
+    out.innerHTML=h; };
+  const _rc=recalc; window.recalc=function(){ _rc(); upd(); }; recalc();
+
+  // 스크롤 스파이
+  const links=$$('#nav a'), secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const io=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){
+      links.forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+e.target.id)); } }); },
+    {rootMargin:'-70px 0px -70% 0px'});
+  secs.forEach(s=>io.observe(s));
+  links.forEach(a=>a.addEventListener('click',ev=>{ ev.preventDefault();
+    document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth',block:'start'}); }));
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
